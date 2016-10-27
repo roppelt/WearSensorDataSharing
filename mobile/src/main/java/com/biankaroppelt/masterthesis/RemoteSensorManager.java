@@ -11,6 +11,8 @@ import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.data.SensorNames;
 import com.biankaroppelt.masterthesis.events.BusProvider;
 import com.biankaroppelt.masterthesis.events.NewSensorEvent;
+import com.biankaroppelt.masterthesis.events.SensorDataReceiving;
+import com.biankaroppelt.masterthesis.events.SensorDataReceivingStop;
 import com.biankaroppelt.masterthesis.events.SensorUpdatedEvent;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -98,7 +100,7 @@ public class RemoteSensorManager {
       Sensor sensor = getOrCreateSensor(sensorType);
 
       // TODO: We probably want to pull sensor data point objects from a pool here
-      SensorDataPoint dataPoint = new SensorDataPoint(timestamp, accuracy, values);
+      SensorDataPoint dataPoint = new SensorDataPoint(sensor, timestamp, accuracy, values);
 
       sensor.addDataPoint(dataPoint);
 
@@ -168,6 +170,8 @@ public class RemoteSensorManager {
             controlMeasurementInBackground(ClientPaths.START_MEASUREMENT);
          }
       });
+
+      BusProvider.postOnMainThread(new SensorDataReceiving());
    }
 
    public void stopMeasurement() {
@@ -177,6 +181,8 @@ public class RemoteSensorManager {
             controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT);
          }
       });
+
+      BusProvider.postOnMainThread(new SensorDataReceivingStop());
    }
 
 //   public void getNodes(ResultCallback<NodeApi.GetConnectedNodesResult> pCallback) {

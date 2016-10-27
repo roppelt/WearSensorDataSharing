@@ -1,5 +1,6 @@
 package com.biankaroppelt.masterthesis;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
@@ -8,8 +9,22 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.biankaroppelt.datalogger.DataMapKeys;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +55,7 @@ public class SensorService extends Service implements SensorEventListener {
    private final static int SENS_STEP_COUNTER = Sensor.TYPE_STEP_COUNTER;
    private final static int SENS_GEOMAGNETIC = Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR;
    private final static int SENS_HEARTRATE = Sensor.TYPE_HEART_RATE;
+   private static final int CLIENT_CONNECTION_TIMEOUT = 15000;
 
    SensorManager mSensorManager;
 
@@ -47,12 +63,15 @@ public class SensorService extends Service implements SensorEventListener {
 
    private DeviceClient client;
    private ScheduledExecutorService mScheduler;
+   private GoogleApiClient googleApiClient;
 
    @Override
    public void onCreate() {
       super.onCreate();
 
       client = DeviceClient.getInstance(this);
+      googleApiClient = new GoogleApiClient.Builder(getApplicationContext()).addApi(Wearable.API)
+            .build();
 
       Notification.Builder builder = new Notification.Builder(this);
       builder.setContentTitle(getString(R.string.app_name));
@@ -276,10 +295,13 @@ public class SensorService extends Service implements SensorEventListener {
    public void onSensorChanged(SensorEvent event) {
       client.sendSensorData(event.sensor.getType(), event.accuracy, event.timestamp, event.values);
       System.out.println("OnSensorChanged Wear: " + event.sensor.getType());
+//      sendData(event.sensor.getType() + " - " + event.accuracy + " - " + event.timestamp + " - " +
+//            Arrays.toString(event.values));
    }
 
    @Override
    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
    }
+
 }

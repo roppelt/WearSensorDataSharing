@@ -1,3 +1,10 @@
 <resources>
    <string name="app_name">MasterThesis</string>
+   <string name="data_status_receiving">Receiving sensor data</string>
+   <string name="data_status_idle">Not receiving sensor data</string>
+   <string name="button_collecting_data_start">Start collecting data</string>
+   <string name="button_collecting_data_stop">Stop collecting data</string>
+   <string name="sensor_data_list_title_1">Sensor</string>
+   <string name="sensor_data_list_title_2">Accuracy</string>
+   <string name="sensor_data_list_title_3">Values</string>
 </resources>

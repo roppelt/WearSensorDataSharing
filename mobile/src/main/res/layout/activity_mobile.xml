@@ -3,14 +3,61 @@
    xmlns:tools="http://schemas.android.com/tools"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:paddingBottom="@dimen/activity_vertical_margin"
-   android:paddingLeft="@dimen/activity_horizontal_margin"
-   android:paddingRight="@dimen/activity_horizontal_margin"
    android:paddingTop="@dimen/activity_vertical_margin"
-   tools:context="com.biankaroppelt.masterthesis.WearActivity">
+   tools:context="com.biankaroppelt.masterthesis.MobileActivity">
 
-   <TextView
-      android:layout_width="wrap_content"
+   <RelativeLayout
+      android:id="@+id/data_collecting_buttons_container"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="Hello World!" />
+      android:gravity="center_horizontal">
+
+      <Button
+         android:id="@+id/button_start_collecting_data"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/button_collecting_data_start" />
+
+      <Button
+         android:id="@+id/button_stop_collecting_data"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/button_collecting_data_stop"
+         android:visibility="gone" />
+   </RelativeLayout>
+
+   <RelativeLayout
+      android:id="@+id/data_status_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/data_collecting_buttons_container"
+      android:gravity="center_horizontal">
+
+      <TextView
+         android:id="@+id/data_status_idle"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/data_status_idle" />
+
+      <TextView
+         android:id="@+id/data_status_receiving"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/data_status_receiving"
+         android:visibility="gone" />
+   </RelativeLayout>
+
+   <include
+      android:id="@+id/sensor_data_list_titles"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/data_status_container"
+      layout="@layout/item_sensor_data" />
+
+   <android.support.v7.widget.RecyclerView
+      android:id="@+id/sensor_data_list"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@id/sensor_data_list_titles" />
+
 </RelativeLayout>
