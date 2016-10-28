@@ -1,63 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   xmlns:app="http://schemas.android.com/apk/res-auto"
    xmlns:tools="http://schemas.android.com/tools"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:paddingTop="@dimen/activity_vertical_margin"
+   android:fitsSystemWindows="true"
    tools:context="com.biankaroppelt.masterthesis.MobileActivity">
 
-   <RelativeLayout
-      android:id="@+id/data_collecting_buttons_container"
+   <android.support.design.widget.AppBarLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:gravity="center_horizontal">
+      android:theme="@style/AppTheme.AppBarOverlay">
 
-      <Button
-         android:id="@+id/button_start_collecting_data"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/button_collecting_data_start" />
+      <android.support.v7.widget.Toolbar
+         android:id="@+id/toolbar"
+         android:layout_width="match_parent"
+         android:layout_height="?attr/actionBarSize"
+         android:background="?attr/colorPrimary"
+         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-      <Button
-         android:id="@+id/button_stop_collecting_data"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/button_collecting_data_stop"
-         android:visibility="gone" />
-   </RelativeLayout>
+   </android.support.design.widget.AppBarLayout>
 
-   <RelativeLayout
-      android:id="@+id/data_status_container"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_below="@id/data_collecting_buttons_container"
-      android:gravity="center_horizontal">
+   <include layout="@layout/content_mobile" />
 
-      <TextView
-         android:id="@+id/data_status_idle"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/data_status_idle" />
+   <!--<android.support.design.widget.FloatingActionButton-->
+      <!--android:id="@+id/fab"-->
+      <!--android:layout_width="wrap_content"-->
+      <!--android:layout_height="wrap_content"-->
+      <!--android:layout_gravity="bottom|end"-->
+      <!--android:layout_margin="@dimen/fab_margin"-->
+      <!--android:src="@android:drawable/ic_dialog_email" />-->
 
-      <TextView
-         android:id="@+id/data_status_receiving"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="@string/data_status_receiving"
-         android:visibility="gone" />
-   </RelativeLayout>
-
-   <include
-      android:id="@+id/sensor_data_list_titles"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_below="@id/data_status_container"
-      layout="@layout/item_sensor_data" />
-
-   <android.support.v7.widget.RecyclerView
-      android:id="@+id/sensor_data_list"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_below="@id/sensor_data_list_titles" />
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

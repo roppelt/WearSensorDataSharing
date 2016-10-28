@@ -7,4 +7,6 @@
    <string name="sensor_data_list_title_1">Sensor</string>
    <string name="sensor_data_list_title_2">Accuracy</string>
    <string name="sensor_data_list_title_3">Values</string>
+   <string name="action_delete_data">Delete data</string>
+   <string name="action_send_data">Send data</string>
 </resources>

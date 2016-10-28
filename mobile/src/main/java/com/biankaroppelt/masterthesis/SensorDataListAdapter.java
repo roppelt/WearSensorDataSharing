@@ -27,6 +27,11 @@ public class SensorDataListAdapter extends RecyclerView.Adapter<SensorDataListVi
       notifyItemInserted(0);
    }
 
+   public void deleteData() {
+      mItems = new ArrayList<>();
+      notifyDataSetChanged();
+   }
+
    @Override
    public SensorDataListViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
       View view = LayoutInflater.from(viewGroup.getContext())
@@ -39,9 +44,7 @@ public class SensorDataListAdapter extends RecyclerView.Adapter<SensorDataListVi
       viewHolder.sensorInfo1.setText(mItems.get(i)
             .getSensor()
             .getName());
-      viewHolder.sensorInfo2.setText(String.valueOf(mItems.get(i)
-            .getAccuracy()));
-      viewHolder.sensorInfo3.setText(Arrays.toString(mItems.get(i)
+      viewHolder.sensorInfo2.setText(Arrays.toString(mItems.get(i)
             .getValues()));
    }
 
@@ -55,14 +58,12 @@ class SensorDataListViewHolder extends RecyclerView.ViewHolder {
 
    TextView sensorInfo1;
    TextView sensorInfo2;
-   TextView sensorInfo3;
 
    public SensorDataListViewHolder(View itemView) {
       super(itemView);
 
       sensorInfo1 = (TextView) itemView.findViewById(R.id.sensor_info_1);
       sensorInfo2 = (TextView) itemView.findViewById(R.id.sensor_info_2);
-      sensorInfo3 = (TextView) itemView.findViewById(R.id.sensor_info_3);
    }
 }
 

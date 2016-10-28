@@ -5,8 +5,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.biankaroppelt.masterthesis.data.Sensor;
@@ -21,17 +25,16 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MobileActivity extends Activity {
+public class MobileActivity extends AppCompatActivity {
 
    private RemoteSensorManager remoteSensorManager;
 
    private static final String TAG = MobileActivity.class.getSimpleName();
 
-   private TextView dataStatusIdleTextView;
-   private TextView dataStatusReceivingTextView;
    private Button startCollectingDataButton;
    private Button stopCollectingDataButton;
    private RecyclerView sensorDataRecyclerView;
+   private LinearLayout sensorDataListHeader;
 
    private boolean isCollectingData;
    private SensorDataListAdapter adapter;
@@ -40,15 +43,53 @@ public class MobileActivity extends Activity {
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_mobile);
-      dataStatusIdleTextView = ((TextView) findViewById(R.id.data_status_idle));
-      dataStatusReceivingTextView = ((TextView) findViewById(R.id.data_status_receiving));
       startCollectingDataButton = ((Button) findViewById(R.id.button_start_collecting_data));
       stopCollectingDataButton = ((Button) findViewById(R.id.button_stop_collecting_data));
       sensorDataRecyclerView = ((RecyclerView)findViewById(R.id.sensor_data_list));
+      sensorDataListHeader = ((LinearLayout)findViewById(R.id.sensor_data_list_header));
+      sensorDataListHeader.setVisibility(View.GONE);
       remoteSensorManager = RemoteSensorManager.getInstance(this);
       isCollectingData = false;
+      setupToolbar();
       setupButtonListener();
       setupRecyclerView();
+   }
+
+   private void setupToolbar() {
+      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      setSupportActionBar(toolbar);
+   }
+
+   @Override
+   public boolean onCreateOptionsMenu(Menu menu) {
+      getMenuInflater().inflate(R.menu.menu_mobile, menu);
+      return true;
+   }
+
+   @Override
+   public boolean onOptionsItemSelected(MenuItem item) {
+      switch (item.getItemId()) {
+         case R.id.action_delete_data:
+            deleteData();
+            return true;
+         case R.id.action_send_data:
+            sendData();
+            return true;
+      }
+
+      return super.onOptionsItemSelected(item);
+   }
+
+   private void sendData() {
+      // TODO: create Popup menu with title and then send data to computer
+   }
+
+   private void deleteData() {
+      if(isCollectingData) {
+         stopCollectingData();
+      }
+      adapter.deleteData();
+      sensorDataListHeader.setVisibility(View.GONE);
    }
 
    private void setupRecyclerView() {
@@ -56,9 +97,6 @@ public class MobileActivity extends Activity {
       LinearLayoutManager layoutManager = new LinearLayoutManager(this);
       sensorDataRecyclerView.setLayoutManager(layoutManager);
       adapter = new SensorDataListAdapter(this, new ArrayList<SensorDataPoint>());
-//      DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(sensorDataRecyclerView.getContext(),
-//            layoutManager.getOrientation());
-//      sensorDataRecyclerView.addItemDecoration(dividerItemDecoration);
       sensorDataRecyclerView.setAdapter(adapter);
    }
 
@@ -66,21 +104,30 @@ public class MobileActivity extends Activity {
       startCollectingDataButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            remoteSensorManager.startMeasurement();
-            isCollectingData = true;
-            startCollectingDataButton.setVisibility(View.GONE);
-            stopCollectingDataButton.setVisibility(View.VISIBLE);
+            startCollectingData();
          }
       });
       stopCollectingDataButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            remoteSensorManager.stopMeasurement();
-            isCollectingData = false;
-            startCollectingDataButton.setVisibility(View.VISIBLE);
-            stopCollectingDataButton.setVisibility(View.GONE);
+            stopCollectingData();
          }
       });
+   }
+
+   private void startCollectingData() {
+      remoteSensorManager.startMeasurement();
+      isCollectingData = true;
+      startCollectingDataButton.setVisibility(View.GONE);
+      stopCollectingDataButton.setVisibility(View.VISIBLE);
+      sensorDataListHeader.setVisibility(View.VISIBLE);
+   }
+
+   private void stopCollectingData() {
+      remoteSensorManager.stopMeasurement();
+      isCollectingData = false;
+      startCollectingDataButton.setVisibility(View.VISIBLE);
+      stopCollectingDataButton.setVisibility(View.GONE);
    }
 
    @Override
@@ -121,18 +168,10 @@ public class MobileActivity extends Activity {
    @Subscribe
    public void onSensorDataReceiving(final SensorDataReceiving event) {
       System.out.println("onSensorDataReceiving");
-      //      if (dataStatusTextView != null) {
-      dataStatusIdleTextView.setVisibility(View.GONE);
-      dataStatusReceivingTextView.setVisibility(View.VISIBLE);
-      //      }
    }
 
    @Subscribe
    public void onSensorDataReceivingStop(final SensorDataReceivingStop event) {
       System.out.println("onSensorDataReceivingStop");
-      //      if (dataStatusTextView != null) {
-      dataStatusIdleTextView.setVisibility(View.VISIBLE);
-      dataStatusReceivingTextView.setVisibility(View.GONE);
-      //      }
    }
 }

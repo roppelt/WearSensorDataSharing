@@ -43,7 +43,9 @@ public class SensorReceiverService extends WearableListenerService {
 
    @Override
    public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
-      Log.i(TAG, "onCapabilityChanged: " + capabilityInfo.getName() + " (" + capabilityInfo.getNodes() + ")");
+      Log.i(TAG,
+            "onCapabilityChanged: " + capabilityInfo.getName() + " (" + capabilityInfo.getNodes() +
+                  ")");
       super.onCapabilityChanged(capabilityInfo);
    }
 
@@ -65,8 +67,6 @@ public class SensorReceiverService extends WearableListenerService {
          }
       }
    }
-
-
 
    private void unpackSensorData(int sensorType, DataMap dataMap) {
       int accuracy = dataMap.getInt(DataMapKeys.ACCURACY);

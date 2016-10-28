@@ -5,9 +5,14 @@
    android:layout_height="wrap_content"
    android:orientation="vertical">
 
+   <View
+      android:layout_width="match_parent"
+      android:layout_height="0.5dp"
+      android:background="@color/divider" />
+
    <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="60dp"
+      android:layout_height="30dp"
       android:orientation="horizontal"
       android:weightSum="6">
 
@@ -16,9 +21,11 @@
          android:layout_width="0dp"
          android:layout_height="match_parent"
          android:layout_weight="2"
+         android:maxLines="5"
          android:padding="@dimen/cell_padding"
          android:text="@string/sensor_data_list_title_1"
-         android:textColor="@color/secondaryText" />
+         android:textColor="@color/primaryText"
+         android:textSize="16sp" />
 
       <LinearLayout
          android:layout_width="0dp"
@@ -35,9 +42,11 @@
             android:id="@+id/sensor_info_2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:maxLines="5"
             android:padding="@dimen/cell_padding"
             android:text="@string/sensor_data_list_title_3"
-            android:textColor="@color/secondaryText" />
+            android:textColor="@color/primaryText"
+            android:textSize="16sp" />
 
       </LinearLayout>
 
@@ -45,6 +54,6 @@
 
    <View
       android:layout_width="match_parent"
-      android:layout_height="0.5dp"
+      android:layout_height="1dp"
       android:background="@color/divider" />
 </LinearLayout>
