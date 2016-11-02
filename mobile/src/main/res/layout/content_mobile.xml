@@ -14,7 +14,6 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center_horizontal">
-
       <Button
          android:id="@+id/button_start_collecting_data"
          style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"

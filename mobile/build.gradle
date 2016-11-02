@@ -17,6 +17,7 @@ android {
          proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       }
    }
+   useLibrary 'org.apache.http.legacy'
 }
 dependencies {
    compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -29,4 +30,5 @@ dependencies {
    compile project(path: ':shared')
    compile 'com.android.support:recyclerview-v7:24.2.1'
    compile 'com.android.support:design:24.2.1'
+   compile group: 'org.apache.httpcomponents', name: 'httpclient-android', version: '4.3.5.1'
 }

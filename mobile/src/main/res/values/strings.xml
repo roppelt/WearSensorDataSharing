@@ -9,4 +9,8 @@
    <string name="sensor_data_list_title_3">Values</string>
    <string name="action_delete_data">Delete data</string>
    <string name="action_send_data">Send data</string>
+   <string name="popup_hint_data_title">Name of the data collection</string>
+   <string name="popup_data_title">Send the data to the websever</string>
+   <string name="popup_button_ok">Send</string>
+   <string name="popup_button_cancel">Cancel</string>
 </resources>

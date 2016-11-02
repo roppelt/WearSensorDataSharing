@@ -6,7 +6,7 @@ public class SensorNames {
    public SparseArray<String> names;
 
    public SensorNames() {
-      names = new SparseArray<String>();
+      names = new SparseArray<>();
 
       names.append(0, "Debug Sensor");
       names.append(android.hardware.Sensor.TYPE_ACCELEROMETER, "Accelerometer");

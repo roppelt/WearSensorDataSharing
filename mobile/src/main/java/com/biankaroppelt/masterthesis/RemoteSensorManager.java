@@ -5,24 +5,17 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.biankaroppelt.datalogger.ClientPaths;
-import com.biankaroppelt.datalogger.DataMapKeys;
 import com.biankaroppelt.masterthesis.data.Sensor;
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.data.SensorNames;
 import com.biankaroppelt.masterthesis.events.BusProvider;
 import com.biankaroppelt.masterthesis.events.NewSensorEvent;
-import com.biankaroppelt.masterthesis.events.SensorDataReceiving;
-import com.biankaroppelt.masterthesis.events.SensorDataReceivingStop;
 import com.biankaroppelt.masterthesis.events.SensorUpdatedEvent;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.NodeApi;
-import com.google.android.gms.wearable.PutDataMapRequest;
-import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.util.ArrayList;
@@ -56,8 +49,8 @@ public class RemoteSensorManager {
 
    private RemoteSensorManager(Context context) {
       this.context = context;
-      this.sensorMapping = new SparseArray<Sensor>();
-      this.sensors = new ArrayList<Sensor>();
+      this.sensorMapping = new SparseArray<>();
+      this.sensors = new ArrayList<>();
       this.sensorNames = new SensorNames();
 
       this.googleApiClient = new GoogleApiClient.Builder(context).addApi(Wearable.API)
@@ -107,17 +100,6 @@ public class RemoteSensorManager {
       BusProvider.postOnMainThread(new SensorUpdatedEvent(sensor, dataPoint));
    }
 
-   //   public synchronized void addTag(String pTagName) {
-   //      TagData tag = new TagData(pTagName, System.currentTimeMillis());
-   //      this.tags.add(tag);
-   //
-   //      BusProvider.postOnMainThread(new TagAddedEvent(tag));
-   //   }
-
-   //   public LinkedList<TagData> getTags() {
-   //      return (LinkedList<TagData>) tags.clone();
-   //   }
-
    private boolean validateConnection() {
       if (googleApiClient.isConnected()) {
          return true;
@@ -129,40 +111,6 @@ public class RemoteSensorManager {
       return result.isSuccess();
    }
 
-   public void filterBySensorId(final int sensorId) {
-      executorService.execute(new Runnable() {
-         @Override
-         public void run() {
-            filterBySensorIdInBackground(sensorId);
-         }
-      });
-   }
-
-   ;
-
-   private void filterBySensorIdInBackground(final int sensorId) {
-      Log.d(TAG, "filterBySensorId(" + sensorId + ")");
-
-      if (validateConnection()) {
-         PutDataMapRequest dataMap = PutDataMapRequest.create("/filter");
-
-         dataMap.getDataMap()
-               .putInt(DataMapKeys.FILTER, sensorId);
-         dataMap.getDataMap()
-               .putLong(DataMapKeys.TIMESTAMP, System.currentTimeMillis());
-
-         PutDataRequest putDataRequest = dataMap.asPutDataRequest();
-         Wearable.DataApi.putDataItem(googleApiClient, putDataRequest)
-               .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-                  @Override
-                  public void onResult(DataApi.DataItemResult dataItemResult) {
-                     Log.d(TAG, "Filter by sensor " + sensorId + ": " + dataItemResult.getStatus()
-                           .isSuccess());
-                  }
-               });
-      }
-   }
-
    public void startMeasurement() {
       executorService.submit(new Runnable() {
          @Override
@@ -170,8 +118,6 @@ public class RemoteSensorManager {
             controlMeasurementInBackground(ClientPaths.START_MEASUREMENT);
          }
       });
-
-      BusProvider.postOnMainThread(new SensorDataReceiving());
    }
 
    public void stopMeasurement() {
@@ -181,14 +127,12 @@ public class RemoteSensorManager {
             controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT);
          }
       });
-
-      BusProvider.postOnMainThread(new SensorDataReceivingStop());
    }
 
-//   public void getNodes(ResultCallback<NodeApi.GetConnectedNodesResult> pCallback) {
-//      Wearable.NodeApi.getConnectedNodes(googleApiClient)
-//            .setResultCallback(pCallback);
-//   }
+   //   public void getNodes(ResultCallback<NodeApi.GetConnectedNodesResult> pCallback) {
+   //      Wearable.NodeApi.getConnectedNodes(googleApiClient)
+   //            .setResultCallback(pCallback);
+   //   }
 
    private void controlMeasurementInBackground(final String path) {
       if (validateConnection()) {

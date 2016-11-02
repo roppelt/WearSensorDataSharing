@@ -1,6 +1,5 @@
 package com.biankaroppelt.masterthesis;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
@@ -9,22 +8,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.biankaroppelt.datalogger.DataMapKeys;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.PutDataMapRequest;
-import com.google.android.gms.wearable.PutDataRequest;
-import com.google.android.gms.wearable.Wearable;
-
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -148,7 +133,8 @@ public class SensorService extends Service implements SensorEventListener {
          }
 
          if (gravitySensor != null) {
-            mSensorManager.registerListener(this, gravitySensor, SensorManager.SENSOR_DELAY_FASTEST);
+            mSensorManager.registerListener(this, gravitySensor,
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
             Log.w(TAG, "No Gravity Sensor");
          }
@@ -296,5 +282,4 @@ public class SensorService extends Service implements SensorEventListener {
    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
    }
-
 }

@@ -32,6 +32,10 @@ public class SensorDataListAdapter extends RecyclerView.Adapter<SensorDataListVi
       notifyDataSetChanged();
    }
 
+   public ArrayList<SensorDataPoint> getItems() {
+      return mItems;
+   }
+
    @Override
    public SensorDataListViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
       View view = LayoutInflater.from(viewGroup.getContext())
