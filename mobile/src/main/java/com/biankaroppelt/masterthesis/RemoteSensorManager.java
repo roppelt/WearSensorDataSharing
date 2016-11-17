@@ -89,15 +89,15 @@ public class RemoteSensorManager {
       return sensor;
    }
 
-   public synchronized void addSensorData(ArrayList<ArrayList<Object>> list) {
+   public synchronized void addSensorData(ArrayList<DataMap> list) {
+      System.out.println("addSensorData");
 
       ArrayList<SensorDataPoint> sensorDataPointList = new ArrayList<>();
-      for (ArrayList element : list) {
-         int sensorType = ((Integer) element.get(0));
-         DataMap dataMap = ((DataMap) element.get(1));
-         int accuracy = dataMap.getInt(DataMapKeys.ACCURACY);
-         long timestamp = dataMap.getLong(DataMapKeys.TIMESTAMP);
-         float[] values = dataMap.getFloatArray(DataMapKeys.VALUES);
+      for (DataMap element : list) {
+         int sensorType = element.getInt(DataMapKeys.SENSOR_TYPE);
+         int accuracy = element.getInt(DataMapKeys.ACCURACY);
+         long timestamp = element.getLong(DataMapKeys.TIMESTAMP);
+         float[] values = element.getFloatArray(DataMapKeys.VALUES);
 
          Sensor sensor = getOrCreateSensor(sensorType);
 

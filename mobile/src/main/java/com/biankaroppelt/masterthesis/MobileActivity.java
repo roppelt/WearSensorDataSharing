@@ -2,6 +2,7 @@ package com.biankaroppelt.masterthesis;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.hardware.SensorEvent;
 import android.icu.text.DecimalFormat;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -207,6 +208,7 @@ public class MobileActivity extends AppCompatActivity {
 
    @Subscribe
    public void onSensorUpdatedEvent(final SensorUpdatedEvent event) {
+      System.out.println("onSensorUpdatedEvent");
       if(loadingIndicator.getVisibility() == View.GONE) {
          loadingIndicator.setVisibility(View.VISIBLE);
       }
@@ -292,7 +294,18 @@ public class MobileActivity extends AppCompatActivity {
       if (networkInfo != null && networkInfo.isConnected()) {
          // fetch data
          String stringUrl = "http://master.localtunnel.me/master/new_data_collection.php";
-         new SendDataToWebserverTask().execute(stringUrl, dataSetTitle, mItems);
+
+         System.out.println("sendSensorData");
+//         final int dataPartitioningSize = mItems.size() / 500;
+//         for(int i = 0; i < dataPartitioningSize; i++) {
+//            final ArrayList<SensorDataPoint> tempList =
+//                  new ArrayList<>(mItems.subList(i * 500, ((i + 1) * 500)));
+            new SendDataToWebserverTask().execute(stringUrl, dataSetTitle, mItems);
+
+//         }
+//         final ArrayList<SensorDataPoint> tempList = new ArrayList<>(mItems.subList(dataPartitioningSize*500, mItems.size()));
+//         new SendDataToWebserverTask().execute(stringUrl, dataSetTitle, tempList);
+
       } else {
          // display error
 
