@@ -42,10 +42,10 @@ public class SensorService extends Service implements SensorEventListener {
    private final static int SENS_GEOMAGNETIC = Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR;
    private final static int SENS_HEARTRATE = Sensor.TYPE_HEART_RATE;
 
-   private Sensor mHeartrateSensor;
-   private ScheduledExecutorService mScheduler;
+//   private Sensor mHeartrateSensor;
+//   private ScheduledExecutorService mScheduler;
 
-   private SensorManager mSensorManager;
+   SensorManager mSensorManager;
    //   private Map<Integer, SensorEventListener> sensorEventListeners;
 
    private DeviceClient client;
@@ -56,12 +56,12 @@ public class SensorService extends Service implements SensorEventListener {
 
       client = DeviceClient.getInstance(this);
 
-      Notification.Builder builder = new Notification.Builder(this);
-      builder.setContentTitle(getString(R.string.app_name));
-      builder.setContentText("Collecting sensor data..");
-      builder.setSmallIcon(R.mipmap.ic_launcher);
+//      Notification.Builder builder = new Notification.Builder(this);
+//      builder.setContentTitle(getString(R.string.app_name));
+//      builder.setContentText("Collecting sensor data..");
+//      builder.setSmallIcon(R.mipmap.ic_launcher);
 
-      startForeground(1, builder.build());
+//      startForeground(1, builder.build());
 
       startMeasurement();
    }
@@ -89,8 +89,8 @@ public class SensorService extends Service implements SensorEventListener {
       Sensor gyroscopeSensor = mSensorManager.getDefaultSensor(SENS_GYROSCOPE);
       Sensor gyroscopeUncalibratedSensor =
             mSensorManager.getDefaultSensor(SENS_GYROSCOPE_UNCALIBRATED);
-      mHeartrateSensor = mSensorManager.getDefaultSensor(SENS_HEARTRATE);
-      Sensor heartrateSamsungSensor = mSensorManager.getDefaultSensor(65562);
+//      mHeartrateSensor = mSensorManager.getDefaultSensor(SENS_HEARTRATE);
+//      Sensor heartrateSamsungSensor = mSensorManager.getDefaultSensor(65562);
       Sensor lightSensor = mSensorManager.getDefaultSensor(SENS_LIGHT);
       Sensor linearAccelerationSensor = mSensorManager.getDefaultSensor(SENS_LINEAR_ACCELERATION);
       Sensor magneticFieldSensor = mSensorManager.getDefaultSensor(SENS_MAGNETIC_FIELD);
@@ -108,157 +108,157 @@ public class SensorService extends Service implements SensorEventListener {
       if (mSensorManager != null) {
          if (accelerometerSensor != null) {
             mSensorManager.registerListener(this, accelerometerSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.w(TAG, "No Accelerometer found");
          }
 
          if (ambientTemperatureSensor != null) {
             mSensorManager.registerListener(this, ambientTemperatureSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.w(TAG, "Ambient Temperature Sensor not found");
          }
 
          if (gameRotationVectorSensor != null) {
             mSensorManager.registerListener(this, gameRotationVectorSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.w(TAG, "Gaming Rotation Vector Sensor not found");
          }
 
          if (geomagneticSensor != null) {
             mSensorManager.registerListener(this, geomagneticSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.w(TAG, "No Geomagnetic Sensor found");
          }
 
          if (gravitySensor != null) {
-            mSensorManager.registerListener(this, gravitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(this, gravitySensor, SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.w(TAG, "No Gravity Sensor");
          }
 
          if (gyroscopeSensor != null) {
             mSensorManager.registerListener(this, gyroscopeSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.w(TAG, "No Gyroscope Sensor found");
          }
 
          if (gyroscopeUncalibratedSensor != null) {
             mSensorManager.registerListener(this, gyroscopeUncalibratedSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.w(TAG, "No Uncalibrated Gyroscope Sensor found");
          }
 
-         if (mHeartrateSensor != null) {
-            final int measurementDuration = 10;   // Seconds
-            final int measurementBreak = 5;    // Seconds
-
-            mScheduler = Executors.newScheduledThreadPool(1);
-            mScheduler.scheduleAtFixedRate(new Runnable() {
-               @Override
-               public void run() {
-//                  Log.d(TAG, "register Heartrate Sensor");
-                  mSensorManager.registerListener(SensorService.this, mHeartrateSensor,
-                        SensorManager.SENSOR_DELAY_NORMAL);
-
-                  try {
-                     Thread.sleep(measurementDuration * 1000);
-                  } catch (InterruptedException e) {
-//                     Log.e(TAG, "Interrupted while waitting to unregister Heartrate Sensor");
-                  }
-
-//                  Log.d(TAG, "unregister Heartrate Sensor");
-                  mSensorManager.unregisterListener(SensorService.this, mHeartrateSensor);
-               }
-            }, 3, measurementDuration + measurementBreak, TimeUnit.SECONDS);
-         } else {
-//            Log.d(TAG, "No Heartrate Sensor found");
-         }
-
-         if (heartrateSamsungSensor != null) {
-            mSensorManager.registerListener(this, heartrateSamsungSensor,
-                  SensorManager.SENSOR_DELAY_FASTEST);
-         } else {
-//            Log.d(TAG, "Samsungs Heartrate Sensor not found");
-         }
+//         if (mHeartrateSensor != null) {
+//            final int measurementDuration = 10;   // Seconds
+//            final int measurementBreak = 5;    // Seconds
+//
+//            mScheduler = Executors.newScheduledThreadPool(1);
+//            mScheduler.scheduleAtFixedRate(new Runnable() {
+//               @Override
+//               public void run() {
+////                  Log.d(TAG, "register Heartrate Sensor");
+//                  mSensorManager.registerListener(SensorService.this, mHeartrateSensor,
+//                        SensorManager.SENSOR_DELAY_FASTEST);
+//
+//                  try {
+//                     Thread.sleep(measurementDuration * 1000);
+//                  } catch (InterruptedException e) {
+////                     Log.e(TAG, "Interrupted while waitting to unregister Heartrate Sensor");
+//                  }
+//
+////                  Log.d(TAG, "unregister Heartrate Sensor");
+//                  mSensorManager.unregisterListener(SensorService.this, mHeartrateSensor);
+//               }
+//            }, 3, measurementDuration + measurementBreak, TimeUnit.SECONDS);
+//         } else {
+////            Log.d(TAG, "No Heartrate Sensor found");
+//         }
+//
+//         if (heartrateSamsungSensor != null) {
+//            mSensorManager.registerListener(this, heartrateSamsungSensor,
+//                  SensorManager.SENSOR_DELAY_FASTEST);
+//         } else {
+////            Log.d(TAG, "Samsungs Heartrate Sensor not found");
+//         }
 
          if (lightSensor != null) {
-            mSensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.d(TAG, "No Light Sensor found");
          }
 
          if (linearAccelerationSensor != null) {
             mSensorManager.registerListener(this, linearAccelerationSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.d(TAG, "No Linear Acceleration Sensor found");
          }
 
          if (magneticFieldSensor != null) {
             mSensorManager.registerListener(this, magneticFieldSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.d(TAG, "No Magnetic Field Sensor found");
          }
 
          if (magneticFieldUncalibratedSensor != null) {
             mSensorManager.registerListener(this, magneticFieldUncalibratedSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.d(TAG, "No uncalibrated Magnetic Field Sensor found");
          }
 
          if (pressureSensor != null) {
             mSensorManager.registerListener(this, pressureSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.d(TAG, "No Pressure Sensor found");
          }
 
          if (proximitySensor != null) {
             mSensorManager.registerListener(this, proximitySensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.d(TAG, "No Proximity Sensor found");
          }
 
          if (humiditySensor != null) {
             mSensorManager.registerListener(this, humiditySensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.d(TAG, "No Humidity Sensor found");
          }
 
          if (rotationVectorSensor != null) {
             mSensorManager.registerListener(this, rotationVectorSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.d(TAG, "No Rotation Vector Sensor found");
          }
 
          if (significantMotionSensor != null) {
             mSensorManager.registerListener(this, significantMotionSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.d(TAG, "No Significant Motion Sensor found");
          }
 
          if (stepCounterSensor != null) {
             mSensorManager.registerListener(this, stepCounterSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.d(TAG, "No Step Counter Sensor found");
          }
 
          if (stepDetectorSensor != null) {
             mSensorManager.registerListener(this, stepDetectorSensor,
-                  SensorManager.SENSOR_DELAY_NORMAL);
+                  SensorManager.SENSOR_DELAY_FASTEST);
          } else {
 //            Log.d(TAG, "No Step Detector Sensor found");
          }
@@ -269,9 +269,9 @@ public class SensorService extends Service implements SensorEventListener {
       if (mSensorManager != null) {
          mSensorManager.unregisterListener(this);
       }
-      if (mScheduler != null && !mScheduler.isTerminated()) {
-         mScheduler.shutdown();
-      }
+//      if (mScheduler != null && !mScheduler.isTerminated()) {
+//         mScheduler.shutdown();
+//      }
    }
 
    @Override

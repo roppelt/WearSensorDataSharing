@@ -110,5 +110,6 @@ public class DeviceClient {
                   }
                });
       }
+      System.gc();
    }
 }
