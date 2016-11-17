@@ -105,8 +105,8 @@ public class DeviceClient {
                .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
                   @Override
                   public void onResult(DataApi.DataItemResult dataItemResult) {
-                     Log.v(TAG, "Sending sensor data: " + dataItemResult.getStatus()
-                           .isSuccess());
+//                     Log.v(TAG, "Sending sensor data: " + dataItemResult.getStatus()
+//                           .isSuccess());
                   }
                });
       }

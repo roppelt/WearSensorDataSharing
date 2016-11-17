@@ -3,17 +3,14 @@ package com.biankaroppelt.masterthesis;
 import android.net.Uri;
 import android.util.Log;
 
-import com.biankaroppelt.datalogger.DataMapKeys;
-import com.google.android.gms.wearable.CapabilityInfo;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
-import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.WearableListenerService;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class SensorReceiverService extends WearableListenerService {
    private static final String TAG = "SensorReceiverService";
@@ -31,27 +28,20 @@ public class SensorReceiverService extends WearableListenerService {
    public void onPeerConnected(Node peer) {
       super.onPeerConnected(peer);
 
-      Log.i(TAG, "Connected: " + peer.getDisplayName() + " (" + peer.getId() + ")");
+//      Log.i(TAG, "Connected: " + peer.getDisplayName() + " (" + peer.getId() + ")");
    }
 
    @Override
    public void onPeerDisconnected(Node peer) {
       super.onPeerDisconnected(peer);
 
-      Log.i(TAG, "Disconnected: " + peer.getDisplayName() + " (" + peer.getId() + ")");
-   }
-
-   @Override
-   public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
-      Log.i(TAG,
-            "onCapabilityChanged: " + capabilityInfo.getName() + " (" + capabilityInfo.getNodes() +
-                  ")");
-      super.onCapabilityChanged(capabilityInfo);
+//      Log.i(TAG, "Disconnected: " + peer.getDisplayName() + " (" + peer.getId() + ")");
    }
 
    @Override
    public void onDataChanged(DataEventBuffer dataEvents) {
-      Log.d(TAG, "onDataChanged()");
+//      Log.d(TAG, "onDataChanged()");
+      ArrayList<ArrayList<Object>> list = new ArrayList<>();
 
       for (DataEvent dataEvent : dataEvents) {
          if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
@@ -60,21 +50,14 @@ public class SensorReceiverService extends WearableListenerService {
             String path = uri.getPath();
 
             if (path.startsWith("/sensors/")) {
-               unpackSensorData(Integer.parseInt(uri.getLastPathSegment()),
-                     DataMapItem.fromDataItem(dataItem)
-                           .getDataMap());
+               ArrayList<Object> element = new ArrayList<>();
+               element.add(Integer.parseInt(uri.getLastPathSegment()));
+               element.add(DataMapItem.fromDataItem(dataItem)
+                     .getDataMap());
+               list.add(element);
             }
          }
       }
-   }
-
-   private void unpackSensorData(int sensorType, DataMap dataMap) {
-      int accuracy = dataMap.getInt(DataMapKeys.ACCURACY);
-      long timestamp = dataMap.getLong(DataMapKeys.TIMESTAMP);
-      float[] values = dataMap.getFloatArray(DataMapKeys.VALUES);
-
-      Log.d(TAG, "Received sensor data " + sensorType + " = " + Arrays.toString(values));
-
-      sensorManager.addSensorData(sensorType, accuracy, timestamp, values);
+      sensorManager.addSensorData(list);
    }
 }

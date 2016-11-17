@@ -5,15 +5,18 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.biankaroppelt.datalogger.ClientPaths;
+import com.biankaroppelt.datalogger.DataMapKeys;
 import com.biankaroppelt.masterthesis.data.Sensor;
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.data.SensorNames;
 import com.biankaroppelt.masterthesis.events.BusProvider;
 import com.biankaroppelt.masterthesis.events.NewSensorEvent;
+import com.biankaroppelt.masterthesis.events.NoNodesAvailableEvent;
 import com.biankaroppelt.masterthesis.events.SensorUpdatedEvent;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
@@ -36,8 +39,6 @@ public class RemoteSensorManager {
    private ArrayList<Sensor> sensors;
    private SensorNames sensorNames;
    private GoogleApiClient googleApiClient;
-
-   //   private LinkedList<TagData> tags = new LinkedList<>();
 
    public static synchronized RemoteSensorManager getInstance(Context context) {
       if (instance == null) {
@@ -88,16 +89,25 @@ public class RemoteSensorManager {
       return sensor;
    }
 
-   public synchronized void addSensorData(int sensorType, int accuracy, long timestamp,
-         float[] values) {
-      Sensor sensor = getOrCreateSensor(sensorType);
+   public synchronized void addSensorData(ArrayList<ArrayList<Object>> list) {
 
-      // TODO: We probably want to pull sensor data point objects from a pool here
-      SensorDataPoint dataPoint = new SensorDataPoint(sensor, timestamp, accuracy, values);
+      ArrayList<SensorDataPoint> sensorDataPointList = new ArrayList<>();
+      for (ArrayList element : list) {
+         int sensorType = ((Integer) element.get(0));
+         DataMap dataMap = ((DataMap) element.get(1));
+         int accuracy = dataMap.getInt(DataMapKeys.ACCURACY);
+         long timestamp = dataMap.getLong(DataMapKeys.TIMESTAMP);
+         float[] values = dataMap.getFloatArray(DataMapKeys.VALUES);
 
-      sensor.addDataPoint(dataPoint);
+         Sensor sensor = getOrCreateSensor(sensorType);
 
-      BusProvider.postOnMainThread(new SensorUpdatedEvent(sensor, dataPoint));
+         // TODO: We probably want to pull sensor data point objects from a pool here
+         SensorDataPoint dataPoint = new SensorDataPoint(sensor, timestamp, accuracy, values);
+
+         sensor.addDataPoint(dataPoint);
+         sensorDataPointList.add(dataPoint);
+      }
+      BusProvider.postOnMainThread(new SensorUpdatedEvent(sensorDataPointList));
    }
 
    private boolean validateConnection() {
@@ -129,31 +139,31 @@ public class RemoteSensorManager {
       });
    }
 
-   //   public void getNodes(ResultCallback<NodeApi.GetConnectedNodesResult> pCallback) {
-   //      Wearable.NodeApi.getConnectedNodes(googleApiClient)
-   //            .setResultCallback(pCallback);
-   //   }
-
    private void controlMeasurementInBackground(final String path) {
       if (validateConnection()) {
          List<Node> nodes = Wearable.NodeApi.getConnectedNodes(googleApiClient)
                .await()
                .getNodes();
-
          Log.d(TAG, "Sending to nodes: " + nodes.size());
 
-         for (Node node : nodes) {
-            Log.i(TAG, "add node " + node.getDisplayName());
-            Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, null)
-                  .setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
-                     @Override
-                     public void onResult(MessageApi.SendMessageResult sendMessageResult) {
-                        Log.d(TAG, "controlMeasurementInBackground(" + path + "): " +
-                              sendMessageResult.getStatus()
-                                    .isSuccess());
-                     }
-                  });
+         if(nodes.isEmpty()) {
+            BusProvider.postOnMainThread(new NoNodesAvailableEvent());
+         } else {
+
+            for (Node node : nodes) {
+               Log.i(TAG, "add node " + node.getDisplayName());
+               Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, null)
+                     .setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+                        @Override
+                        public void onResult(MessageApi.SendMessageResult sendMessageResult) {
+                           //                        Log.d(TAG, "controlMeasurementInBackground(" + path + "): " +
+                           //                              sendMessageResult.getStatus()
+                           //                                    .isSuccess());
+                        }
+                     });
+            }
          }
+
       } else {
          Log.w(TAG, "No connection possible");
       }

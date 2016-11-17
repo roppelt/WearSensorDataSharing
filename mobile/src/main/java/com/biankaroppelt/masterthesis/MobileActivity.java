@@ -20,15 +20,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.biankaroppelt.masterthesis.data.Sensor;
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.events.BusProvider;
+import com.biankaroppelt.masterthesis.events.DataPointAddedEvent;
 import com.biankaroppelt.masterthesis.events.NewSensorEvent;
+import com.biankaroppelt.masterthesis.events.NoNodesAvailableEvent;
+import com.biankaroppelt.masterthesis.events.OnDataSentToServerEvent;
 import com.biankaroppelt.masterthesis.events.SensorUpdatedEvent;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MobileActivity extends AppCompatActivity {
@@ -42,7 +48,8 @@ public class MobileActivity extends AppCompatActivity {
    private RecyclerView sensorDataRecyclerView;
    private LinearLayout sensorDataListHeader;
    private CoordinatorLayout coordinatorLayout;
-
+   private TextView dataCountTextView;
+   private ProgressBar loadingIndicator;
    private MenuItem menuItemDeleteData;
    private MenuItem menuItemSendData;
 
@@ -58,6 +65,9 @@ public class MobileActivity extends AppCompatActivity {
       sensorDataRecyclerView = ((RecyclerView) findViewById(R.id.sensor_data_list));
       sensorDataListHeader = ((LinearLayout) findViewById(R.id.sensor_data_list_header));
       coordinatorLayout = ((CoordinatorLayout) findViewById(R.id.coordinator_layout));
+      dataCountTextView = ((TextView) findViewById(R.id.data_count));
+      loadingIndicator = ((ProgressBar) findViewById(R.id.loading_indicator));
+      loadingIndicator.setVisibility(View.GONE);
       sensorDataListHeader.setVisibility(View.GONE);
       remoteSensorManager = RemoteSensorManager.getInstance(this);
       isCollectingData = false;
@@ -140,11 +150,8 @@ public class MobileActivity extends AppCompatActivity {
 
    private void startCollectingData() {
       remoteSensorManager.startMeasurement();
-      isCollectingData = true;
       startCollectingDataButton.setVisibility(View.GONE);
       stopCollectingDataButton.setVisibility(View.VISIBLE);
-      sensorDataListHeader.setVisibility(View.VISIBLE);
-      showMenuItems();
    }
 
    private void stopCollectingData() {
@@ -159,8 +166,8 @@ public class MobileActivity extends AppCompatActivity {
       super.onResume();
       BusProvider.getInstance()
             .register(this);
-      List<Sensor> sensors = RemoteSensorManager.getInstance(this)
-            .getSensors();
+//      List<Sensor> sensors = RemoteSensorManager.getInstance(this)
+//            .getSensors();
       //      pager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager(), sensors));
       if (isCollectingData) {
          remoteSensorManager.startMeasurement();
@@ -178,15 +185,42 @@ public class MobileActivity extends AppCompatActivity {
 
    @Subscribe
    public void onNewSensorEvent(final NewSensorEvent event) {
-      System.out.println("onNewSensorEvent: " + event.getSensor());
+//      System.out.println("onNewSensorEvent: " + event.getSensor());
    }
 
    @Subscribe
    public void onSensorUpdatedEvent(final SensorUpdatedEvent event) {
-      System.out.println(
-            "onSensorUpdatedEvent: " + event.getSensor() + " - " + event.getDataPoint());
-      adapter.addDataPoint(event.getDataPoint());
+//      System.out.println(
+//            "onSensorUpdatedEvent: " + event.getDataPointList().toString());
+//      adapter.addDataPoint(event.getDataPoint());
+      adapter.addDataPoints(event.getDataPointList());
       sensorDataRecyclerView.scrollToPosition(0);
+      if(!isCollectingData) {
+         isCollectingData = true;
+         sensorDataListHeader.setVisibility(View.VISIBLE);
+         showMenuItems();
+      }
+   }
+
+   @Subscribe
+   public void onOnDataSentToServerEvent(final OnDataSentToServerEvent event) {
+      loadingIndicator.setVisibility(View.GONE);
+      System.out.println(event.getResultInfo());
+      Snackbar snackbar = Snackbar.make(coordinatorLayout, event.getResultInfo(), Snackbar.LENGTH_LONG);
+      snackbar.show();
+   }
+
+   @Subscribe
+   public void onDataPointAddedEvent(final DataPointAddedEvent event) {
+//      System.out.println("onDataPointAddedEvent: " + event.getCount());
+      dataCountTextView.setText(String.valueOf(event.getCount()));
+
+   }
+   @Subscribe
+   public void onNoNodesAvailableEvent(final NoNodesAvailableEvent event) {
+      Snackbar snackbar = Snackbar.make(coordinatorLayout, "No watch paired", Snackbar.LENGTH_LONG);
+      snackbar.show();
+      stopCollectingData();
    }
 
    protected void showSendDataDialog() {
@@ -208,9 +242,7 @@ public class MobileActivity extends AppCompatActivity {
                         if (TextUtils.isEmpty(title)) {
                            title = "Test";
                         }
-                        // TODO: send the data
                         sendData(title);
-                        //                        deleteData();
                      }
                   })
             .setNegativeButton(getString(R.string.popup_button_cancel),
@@ -226,14 +258,14 @@ public class MobileActivity extends AppCompatActivity {
    }
 
    private void sendData(String dataSetTitle) {
-
+      loadingIndicator.setVisibility(View.VISIBLE);
       ConnectivityManager connMgr =
             (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
       NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
       if (networkInfo != null && networkInfo.isConnected()) {
          // fetch data
          String stringUrl = "http://master.localtunnel.me/master/new_data_collection.php";
-         new SendDataToWebserverTask(coordinatorLayout).execute(stringUrl, dataSetTitle,
+         new SendDataToWebserverTask().execute(stringUrl, dataSetTitle,
                adapter.getItems());
       } else {
          // display error

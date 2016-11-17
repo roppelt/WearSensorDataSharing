@@ -6,6 +6,8 @@ import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
+import com.biankaroppelt.masterthesis.events.BusProvider;
+import com.biankaroppelt.masterthesis.events.OnDataSentToServerEvent;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -22,13 +24,8 @@ import java.util.ArrayList;
 public class SendDataToWebserverTask extends AsyncTask<Object, Void, String> {
 
    private static final String TAG = SendDataToWebserverTask.class.getSimpleName();
-   private View snackbarAnchor;
    private HttpURLConnection urlConnection;
    private URL url;
-
-   public SendDataToWebserverTask(View snackbarAnchor) {
-      this.snackbarAnchor = snackbarAnchor;
-   }
 
    @Override
    protected String doInBackground(Object... urls) {
@@ -39,11 +36,7 @@ public class SendDataToWebserverTask extends AsyncTask<Object, Void, String> {
    // onPostExecute displays the results of the AsyncTask.
    @Override
    protected void onPostExecute(String result) {
-      // TODO: no snackbar
-      System.out.println("RESULT:");
-      System.out.println(result);
-      Snackbar snackbar = Snackbar.make(snackbarAnchor, result, Snackbar.LENGTH_LONG);
-      snackbar.show();
+      BusProvider.postOnMainThread(new OnDataSentToServerEvent(result));
    }
 
    private String sendDataCollection(String myurl, String dataSetTitle,
@@ -149,8 +142,8 @@ public class SendDataToWebserverTask extends AsyncTask<Object, Void, String> {
             // Pass data to onPostExecute method
             return (result.toString());
          } else {
-
-            return ("unsuccessful (most of the time localtunnel didn't work");
+            System.out.println(urlConnection.getResponseCode() + " - " + urlConnection.getResponseMessage());
+            return ("unsuccessful (most of the time localtunnel didn't work)");
          }
       } catch (IOException e) {
          e.printStackTrace();

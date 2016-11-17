@@ -1,22 +1,18 @@
 package com.biankaroppelt.masterthesis.events;
 
-import com.biankaroppelt.masterthesis.data.Sensor;
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 
+import java.util.ArrayList;
+
 public class SensorUpdatedEvent {
-   private Sensor sensor;
-   private SensorDataPoint sensorDataPoint;
 
-   public SensorUpdatedEvent(Sensor sensor, SensorDataPoint sensorDataPoint) {
-      this.sensor = sensor;
-      this.sensorDataPoint = sensorDataPoint;
+   private ArrayList<SensorDataPoint> sensorDataPointList;
+
+   public SensorUpdatedEvent(ArrayList<SensorDataPoint> sensorDataPointList) {
+      this.sensorDataPointList = sensorDataPointList;
    }
 
-   public Sensor getSensor() {
-      return sensor;
-   }
-
-   public SensorDataPoint getDataPoint() {
-      return sensorDataPoint;
+   public ArrayList<SensorDataPoint> getDataPointList() {
+      return sensorDataPointList;
    }
 }

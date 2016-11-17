@@ -1,22 +1,31 @@
 package com.biankaroppelt.masterthesis;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.WatchViewStub;
+import android.view.WindowManager;
 import android.widget.TextView;
+
+import com.biankaroppelt.masterthesis.events.StartMeasurementEvent;
+import com.biankaroppelt.masterthesis.events.StopMeasurementEvent;
+import com.squareup.otto.Subscribe;
 
 public class WearActivity extends WearableActivity {
 
    private TextView mTextView;
 
    private static final String TAG = WearActivity.class.getSimpleName();
-
+   private PowerManager.WakeLock mWakeLock;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setupUi();
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
    }
 
    private void setupUi() {
@@ -43,7 +52,7 @@ public class WearActivity extends WearableActivity {
    @Override
    public void onExitAmbient() {
       super.onExitAmbient();
-      mTextView.setTextColor(Color.GREEN);
+      mTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
       mTextView.getPaint()
             .setAntiAlias(true);
    }
@@ -53,5 +62,21 @@ public class WearActivity extends WearableActivity {
       super.onUpdateAmbient();
 
       // Update the content (once a minute)
+   }
+   @Subscribe
+   public void onStartMeasurementEvent(final StartMeasurementEvent event) {
+//      System.out.println("onStartMeasurementEvent");
+
+//      // TODO: move to activity
+      mWakeLock = ((PowerManager)getSystemService(Context.POWER_SERVICE))
+            .newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, getClass().getName());
+      mWakeLock.acquire();
+      // screen stays on in this section
+      mWakeLock.release();
+   }
+   @Subscribe
+   public void onStopMeasurementEvent(final StopMeasurementEvent event) {
+//      System.out.println("onStopMeasurementEvent");
+      mWakeLock.release();
    }
 }

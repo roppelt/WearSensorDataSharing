@@ -8,9 +8,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
+import com.biankaroppelt.masterthesis.events.BusProvider;
+import com.biankaroppelt.masterthesis.events.DataPointAddedEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 public class SensorDataListAdapter extends RecyclerView.Adapter<SensorDataListViewHolder> {
 
@@ -22,14 +25,42 @@ public class SensorDataListAdapter extends RecyclerView.Adapter<SensorDataListVi
       this.mItems = dataPoints;
    }
 
-   public void addDataPoint(SensorDataPoint dataPoint) {
-      mItems.add(0, dataPoint);
-      notifyItemInserted(0);
+   public void addDataPoints(ArrayList<SensorDataPoint> dataPointList) {
+//      ArrayList<Long> filterSensorIds = new ArrayList<>();
+//      filterSensorIds.add(1L);
+//            filterListForSensor(filterSensorIds, dataPointList);
+      mItems.addAll(dataPointList);
+      notifyDataSetChanged();
+      BusProvider.postOnMainThread(new DataPointAddedEvent(getItemCountAccelerometer()));
+   }
+
+   private ArrayList<SensorDataPoint> filterListForSensor(ArrayList<Long> sensorIds,
+         ArrayList<SensorDataPoint> dataList) {
+      Iterator<SensorDataPoint> it = dataList.iterator();
+      while (it.hasNext()) {
+         if (!sensorIds.contains(it.next()
+               .getSensor()
+               .getId())) {
+            it.remove();
+         }
+      }
+      return dataList;
    }
 
    public void deleteData() {
       mItems = new ArrayList<>();
       notifyDataSetChanged();
+   }
+
+   public int getItemCountAccelerometer() {
+      int count = 0;
+      for (SensorDataPoint dataPoint : mItems) {
+         if (dataPoint.getSensor()
+               .getId() == 1) {
+            count++;
+         }
+      }
+      return count;
    }
 
    public ArrayList<SensorDataPoint> getItems() {

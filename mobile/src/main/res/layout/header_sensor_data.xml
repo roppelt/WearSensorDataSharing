@@ -21,7 +21,6 @@
          android:layout_width="0dp"
          android:layout_height="match_parent"
          android:layout_weight="2"
-         android:maxLines="5"
          android:padding="@dimen/cell_padding"
          android:text="@string/sensor_data_list_title_1"
          android:textColor="@color/primaryText"
@@ -40,11 +39,19 @@
 
          <TextView
             android:id="@+id/sensor_info_2"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:maxLines="5"
             android:padding="@dimen/cell_padding"
             android:text="@string/sensor_data_list_title_3"
+            android:textColor="@color/primaryText"
+            android:textSize="16sp" />
+
+         <TextView
+            android:id="@+id/data_count"
+            android:gravity="end"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/cell_padding"
             android:textColor="@color/primaryText"
             android:textSize="16sp" />
 
