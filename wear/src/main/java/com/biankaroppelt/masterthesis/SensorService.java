@@ -3,12 +3,12 @@ package com.biankaroppelt.masterthesis;
 import android.app.Service;
 import android.content.Intent;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
 
-import java.util.ArrayList;
+import com.biankaroppelt.masterthesis.events.SensorEvent;
+
 import java.util.Date;
 
 public class SensorService extends Service implements SensorEventListener {
@@ -37,13 +37,11 @@ public class SensorService extends Service implements SensorEventListener {
    private final static int SENS_STEP_COUNTER = Sensor.TYPE_STEP_COUNTER;
    private final static int SENS_GEOMAGNETIC = Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR;
    private final static int SENS_HEARTRATE = Sensor.TYPE_HEART_RATE;
-   private ArrayList<SensorEvent> mItems = new ArrayList<>();
 
    //   private Sensor mHeartrateSensor;
    //   private ScheduledExecutorService mScheduler;
 
    SensorManager mSensorManager;
-   //   private Map<Integer, SensorEventListener> sensorEventListeners;
 
    private DeviceClient client;
 
@@ -105,7 +103,7 @@ public class SensorService extends Service implements SensorEventListener {
       if (mSensorManager != null) {
          if (accelerometerSensor != null) {
             mSensorManager.registerListener(this, accelerometerSensor,
-                  SensorManager.SENSOR_DELAY_FASTEST);
+                  SensorManager.SENSOR_DELAY_NORMAL);
          } else {
             //            Log.w(TAG, "No Accelerometer found");
          }
@@ -140,7 +138,7 @@ public class SensorService extends Service implements SensorEventListener {
          //
          if (gyroscopeSensor != null) {
             mSensorManager.registerListener(this, gyroscopeSensor,
-                  SensorManager.SENSOR_DELAY_FASTEST);
+                  SensorManager.SENSOR_DELAY_NORMAL);
          } else {
             //            Log.w(TAG, "No Gyroscope Sensor found");
          }
@@ -267,29 +265,24 @@ public class SensorService extends Service implements SensorEventListener {
    }
 
    private void stopMeasurement() {
-      System.out.println("stopMeasurement");
       if (mSensorManager != null) {
          mSensorManager.unregisterListener(this);
       }
       //      if (mScheduler != null && !mScheduler.isTerminated()) {
       //         mScheduler.shutdown();
       //      }
-      client.sendSensorData(mItems);
+      client.sendSensorData();
    }
 
    @Override
-   public void onSensorChanged(SensorEvent event) {
-      mItems.add(event);
-//      System.out.println(event);
-//      long timeInMillis = (new Date()).getTime() + (event.timestamp - System.nanoTime()) / 1000000L;
-//      long timeInMillisFirstElement =
-//            (new Date()).getTime() + (mItems.get(0).timestamp - System.nanoTime()) / 1000000L;
+   public void onSensorChanged(android.hardware.SensorEvent event) {
+      float[] valuesCopy = event.values.clone();
+      long timeInMillis = (new Date()).getTime() + (event.timestamp - System.nanoTime()) / 1000000L;
+      client.sendSensorData(event.sensor.getType(), event.accuracy, timeInMillis, event.values);
 
-//      int diffInMs = (int) (timeInMillis - timeInMillisFirstElement);
-//      if (diffInMs > 0) {
-//         System.out.println("Sample count: " + event.sensor.getName());
-//      }
-      //client.sendSensorData(event.sensor.getType(), event.accuracy, timeInMillis, event.values);
+      SensorEvent eventCopy =
+            new SensorEvent(event.accuracy, event.sensor, timeInMillis, valuesCopy);
+      client.addEventToList(eventCopy);
    }
 
    @Override

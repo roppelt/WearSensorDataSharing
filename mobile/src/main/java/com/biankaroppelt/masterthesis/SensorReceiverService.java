@@ -30,20 +30,18 @@ public class SensorReceiverService extends WearableListenerService {
    public void onPeerConnected(Node peer) {
       super.onPeerConnected(peer);
 
-            Log.i(TAG, "Connected: " + peer.getDisplayName() + " (" + peer.getId() + ")");
+      Log.i(TAG, "Connected: " + peer.getDisplayName() + " (" + peer.getId() + ")");
    }
 
    @Override
    public void onPeerDisconnected(Node peer) {
       super.onPeerDisconnected(peer);
 
-            Log.i(TAG, "Disconnected: " + peer.getDisplayName() + " (" + peer.getId() + ")");
+      Log.i(TAG, "Disconnected: " + peer.getDisplayName() + " (" + peer.getId() + ")");
    }
 
    @Override
    public void onDataChanged(DataEventBuffer dataEvents) {
-      System.out.println("onDataChanged");
-      //      Log.d(TAG, "onDataChanged()");
       ArrayList<DataMap> list = new ArrayList<>();
 
       for (DataEvent dataEvent : dataEvents) {
@@ -53,13 +51,8 @@ public class SensorReceiverService extends WearableListenerService {
             String path = uri.getPath();
 
             if (path.startsWith("/sensors/")) {
-               //               ArrayList<Object> element = new ArrayList<>();
-               //               element.add(Integer.parseInt(uri.getLastPathSegment()));
                DataMapItem item = DataMapItem.fromDataItem(dataItem);
                DataMap map = item.getDataMap();
-               if(map.containsKey("test")) {
-                  System.out.println("test int: " + map.get("test"));
-               }
                if (map.containsKey(DataMapKeys.LIST)) {
                   ArrayList<DataMap> dataMaps = map.get(DataMapKeys.LIST);
                   list.addAll(dataMaps);

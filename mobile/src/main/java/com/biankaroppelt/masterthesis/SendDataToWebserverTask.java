@@ -50,7 +50,7 @@ public class SendDataToWebserverTask extends AsyncTask<Object, Void, String> {
 
          urlConnection = (HttpURLConnection) url.openConnection();
          urlConnection.setReadTimeout(15000);
-         urlConnection.setConnectTimeout(10000);
+         urlConnection.setConnectTimeout(50000);
          urlConnection.setRequestMethod("POST");
 
          // setDoInput and setDoOutput method depict handling of both send and receive

@@ -184,9 +184,6 @@ public class MobileActivity extends AppCompatActivity {
       super.onResume();
       BusProvider.getInstance()
             .register(this);
-      //      List<Sensor> sensors = RemoteSensorManager.getInstance(this)
-      //            .getSensors();
-      //      pager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager(), sensors));
       if (isCollectingData) {
          remoteSensorManager.startMeasurement();
       }
@@ -203,7 +200,6 @@ public class MobileActivity extends AppCompatActivity {
 
    @Subscribe
    public void onNewSensorEvent(final NewSensorEvent event) {
-      //      System.out.println("onNewSensorEvent: " + event.getSensor());
    }
 
    @Subscribe
@@ -212,9 +208,6 @@ public class MobileActivity extends AppCompatActivity {
       if(loadingIndicator.getVisibility() == View.GONE) {
          loadingIndicator.setVisibility(View.VISIBLE);
       }
-      //      System.out.println(
-      //            "onSensorUpdatedEvent: " + event.getDataPointList().toString());
-      //      adapter.addDataPoints(event.getDataPointList());
       mItems.addAll(event.getDataPointList());
 //      sensorDataRecyclerView.scrollToPosition(0);
       if (!isCollectingData) {
@@ -235,8 +228,8 @@ public class MobileActivity extends AppCompatActivity {
 
    @Subscribe
    public void onDataPointAddedEvent(final DataPointAddedEvent event) {
-      //      System.out.println("onDataPointAddedEvent: " + event.getCount());
-      dataCountTextView.setText(String.valueOf(event.getCount()));
+//            System.out.println("onDataPointAddedEvent: " + event.getCount());
+//      dataCountTextView.setText(String.valueOf(event.getCount()));
    }
 
    @Subscribe
@@ -295,7 +288,6 @@ public class MobileActivity extends AppCompatActivity {
          // fetch data
          String stringUrl = "http://master.localtunnel.me/master/new_data_collection.php";
 
-         System.out.println("sendSensorData");
 //         final int dataPartitioningSize = mItems.size() / 500;
 //         for(int i = 0; i < dataPartitioningSize; i++) {
 //            final ArrayList<SensorDataPoint> tempList =

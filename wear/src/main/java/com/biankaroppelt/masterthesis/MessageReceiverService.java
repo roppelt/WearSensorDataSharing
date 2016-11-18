@@ -30,7 +30,7 @@ public class MessageReceiverService extends WearableListenerService {
 
       if (messageEvent.getPath()
             .equals(ClientPaths.START_MEASUREMENT)) {
-//         BusProvider.postOnMainThread(new StartMeasurementEvent());
+         BusProvider.postOnMainThread(new StartMeasurementEvent());
          startService(new Intent(this, SensorService.class));
       }
 

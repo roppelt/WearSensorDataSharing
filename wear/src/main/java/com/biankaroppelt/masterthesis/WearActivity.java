@@ -65,7 +65,6 @@ public class WearActivity extends WearableActivity {
    }
    @Subscribe
    public void onStartMeasurementEvent(final StartMeasurementEvent event) {
-//      System.out.println("onStartMeasurementEvent");
 
 //      // TODO: move to activity
       mWakeLock = ((PowerManager)getSystemService(Context.POWER_SERVICE))
@@ -76,7 +75,6 @@ public class WearActivity extends WearableActivity {
    }
    @Subscribe
    public void onStopMeasurementEvent(final StopMeasurementEvent event) {
-//      System.out.println("onStopMeasurementEvent");
       mWakeLock.release();
    }
 }

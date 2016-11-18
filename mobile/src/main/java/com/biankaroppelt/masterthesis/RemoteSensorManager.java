@@ -90,8 +90,6 @@ public class RemoteSensorManager {
    }
 
    public synchronized void addSensorData(ArrayList<DataMap> list) {
-      System.out.println("addSensorData");
-
       ArrayList<SensorDataPoint> sensorDataPointList = new ArrayList<>();
       for (DataMap element : list) {
          int sensorType = element.getInt(DataMapKeys.SENSOR_TYPE);

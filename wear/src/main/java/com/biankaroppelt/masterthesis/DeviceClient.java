@@ -1,11 +1,11 @@
 package com.biankaroppelt.masterthesis;
 
 import android.content.Context;
-import android.hardware.SensorEvent;
 import android.util.Log;
 import android.util.SparseLongArray;
 
 import com.biankaroppelt.datalogger.DataMapKeys;
+import com.biankaroppelt.masterthesis.events.SensorEvent;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -16,8 +16,6 @@ import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +37,7 @@ public class DeviceClient {
    private Context context;
    private GoogleApiClient googleApiClient;
    private ExecutorService executorService;
+   private ArrayList<SensorEvent> mItems;
 
    private SparseLongArray lastSensorData;
 
@@ -50,14 +49,18 @@ public class DeviceClient {
 
       executorService = Executors.newCachedThreadPool();
       lastSensorData = new SparseLongArray();
+      mItems = new ArrayList<>();
    }
 
-   public void sendSensorData(final ArrayList<SensorEvent> sensorData) {
+   void addEventToList(SensorEvent event) {
+      mItems.add(event);
+   }
 
-      System.out.println("sendSensorData");
-      final int dataPartitioningSize = sensorData.size() / 500;
-      for(int i = 0; i < dataPartitioningSize; i++) {
-         final ArrayList<SensorEvent> tempList = new ArrayList<>(sensorData.subList(i*500, ((i+1)*500)));
+   void sendSensorData() {
+      final int dataPartitioningSize = mItems.size() / 500;
+      for (int i = 0; i < dataPartitioningSize; i++) {
+         final ArrayList<SensorEvent> tempList =
+               new ArrayList<>(mItems.subList(i * 500, ((i + 1) * 500)));
 
          final int finalI = i;
          executorService.execute(new Runnable() {
@@ -65,21 +68,21 @@ public class DeviceClient {
             public void run() {
                try {
                   Thread.sleep(finalI * 1000);
-                  sendSensorDataInBackground(finalI, tempList);
+                  sendSensorDataInBackground(tempList);
                } catch (InterruptedException e) {
                   e.printStackTrace();
                }
-
             }
          });
       }
-      final ArrayList<SensorEvent> tempList = new ArrayList<>(sensorData.subList(dataPartitioningSize*500, sensorData.size()));
+      final ArrayList<SensorEvent> tempList =
+            new ArrayList<>(mItems.subList(dataPartitioningSize * 500, mItems.size()));
       executorService.execute(new Runnable() {
          @Override
          public void run() {
             try {
                Thread.sleep(dataPartitioningSize * 1000);
-               sendSensorDataInBackground(dataPartitioningSize, tempList);
+               sendSensorDataInBackground(tempList);
             } catch (InterruptedException e) {
                e.printStackTrace();
             }
@@ -90,19 +93,6 @@ public class DeviceClient {
    public void sendSensorData(final int sensorType, final int accuracy, final long timestamp,
          final float[] values) {
       long t = System.currentTimeMillis();
-      //
-      //      long lastTimestamp = lastSensorData.get(sensorType);
-      //      long timeAgo = t - lastTimestamp;
-      //
-      //      if (lastTimestamp != 0) {
-      //         if (filterId == sensorType && timeAgo < 100) {
-      //            return;
-      //         }
-      //
-      //         if (filterId != sensorType && timeAgo < 3000) {
-      //            return;
-      //         }
-      //      }
 
       lastSensorData.put(sensorType, t);
 
@@ -114,12 +104,11 @@ public class DeviceClient {
       });
    }
 
-   private void sendSensorDataInBackground(int test, ArrayList<SensorEvent> sensorData) {
-      System.out.println("sendSensorDataInBackground");
-      PutDataMapRequest dataMap = PutDataMapRequest.create("/sensors/" );
+   private void sendSensorDataInBackground(ArrayList<SensorEvent> sensorData) {
+      PutDataMapRequest dataMap = PutDataMapRequest.create("/sensors/");
 
       ArrayList<DataMap> list = new ArrayList<>();
-      for(SensorEvent event : sensorData) {
+      for (SensorEvent event : sensorData) {
          DataMap map = new DataMap();
          map.putInt(DataMapKeys.SENSOR_TYPE, event.sensor.getType());
          map.putInt(DataMapKeys.ACCURACY, event.accuracy);
@@ -127,9 +116,8 @@ public class DeviceClient {
          map.putFloatArray(DataMapKeys.VALUES, event.values);
          list.add(map);
       }
-      dataMap.getDataMap().putInt("test", test);
-      System.out.println("test int wear: " + test);
-      dataMap.getDataMap().putDataMapArrayList(DataMapKeys.LIST, list);
+      dataMap.getDataMap()
+            .putDataMapArrayList(DataMapKeys.LIST, list);
 
       PutDataRequest putDataRequest = dataMap.asPutDataRequest();
       send(putDataRequest);
@@ -161,7 +149,6 @@ public class DeviceClient {
    }
 
    private void send(PutDataRequest putDataRequest) {
-      System.out.println("send");
       if (validateConnection()) {
          Wearable.DataApi.putDataItem(googleApiClient, putDataRequest)
                .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
@@ -171,6 +158,6 @@ public class DeviceClient {
                   }
                });
       }
-//      System.gc();
+      System.gc();
    }
 }
