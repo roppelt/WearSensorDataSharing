@@ -90,7 +90,7 @@ public class DeviceClient {
       });
    }
 
-   public void sendSensorData(final int sensorType, final int accuracy, final long timestamp,
+   public void sendSensorDataOrientation(final int sensorType, final int accuracy, final long timestamp,
          final float[] values) {
       long t = System.currentTimeMillis();
 
@@ -99,7 +99,7 @@ public class DeviceClient {
       executorService.submit(new Runnable() {
          @Override
          public void run() {
-            sendSensorDataInBackground(sensorType, accuracy, timestamp, values);
+            sendSensorDataOrientationInBackground(sensorType, accuracy, timestamp, values);
          }
       });
    }
@@ -123,10 +123,11 @@ public class DeviceClient {
       send(putDataRequest);
    }
 
-   private void sendSensorDataInBackground(int sensorType, int accuracy, long timestamp,
+   private void sendSensorDataOrientationInBackground(int sensorType, int accuracy, long timestamp,
          float[] values) {
-      PutDataMapRequest dataMap = PutDataMapRequest.create("/sensors/" + sensorType);
+      PutDataMapRequest dataMap = PutDataMapRequest.create("/sensorsOrientation/");
 
+      dataMap.getDataMap().putInt(DataMapKeys.SENSOR_TYPE, sensorType);
       dataMap.getDataMap()
             .putInt(DataMapKeys.ACCURACY, accuracy);
       dataMap.getDataMap()

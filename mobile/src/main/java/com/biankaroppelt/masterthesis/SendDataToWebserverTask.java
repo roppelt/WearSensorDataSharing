@@ -138,7 +138,7 @@ public class SendDataToWebserverTask extends AsyncTask<Object, Void, String> {
             while ((line = reader.readLine()) != null) {
                result.append(line);
             }
-
+            input.close();
             // Pass data to onPostExecute method
             return (result.toString());
          } else {

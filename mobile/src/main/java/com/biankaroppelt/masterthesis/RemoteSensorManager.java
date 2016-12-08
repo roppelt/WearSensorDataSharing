@@ -137,6 +137,25 @@ public class RemoteSensorManager {
       });
    }
 
+   public void startMeasurementOrientation() {
+      executorService.submit(new Runnable() {
+         @Override
+         public void run() {
+            controlMeasurementInBackground(ClientPaths.START_MEASUREMENT_ORIENTATION);
+         }
+      });
+   }
+
+   public void stopMeasurementOrientation() {
+      executorService.submit(new Runnable() {
+         @Override
+         public void run() {
+            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT_ORIENTATION);
+         }
+      });
+   }
+
+
    private void controlMeasurementInBackground(final String path) {
       if (validateConnection()) {
          List<Node> nodes = Wearable.NodeApi.getConnectedNodes(googleApiClient)

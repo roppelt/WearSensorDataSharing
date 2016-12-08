@@ -1,7 +1,5 @@
 package com.biankaroppelt.masterthesis.events;
 
-import com.biankaroppelt.masterthesis.data.Sensor;
-
 public class OnDataSentToServerEvent {
    private String resultInfo;
 

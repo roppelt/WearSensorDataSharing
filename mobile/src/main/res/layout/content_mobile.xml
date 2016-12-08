@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   xmlns:app="http://schemas.android.com/apk/res-auto"
    xmlns:tools="http://schemas.android.com/tools"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   xmlns:app="http://schemas.android.com/apk/res-auto"
    android:orientation="vertical"
    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-   tools:showIn="@layout/activity_mobile"
-   tools:context="com.biankaroppelt.masterthesis.MobileActivity">
+   tools:context="com.biankaroppelt.masterthesis.MobileActivity"
+   tools:showIn="@layout/activity_mobile">
 
    <RelativeLayout
       android:id="@+id/data_collecting_buttons_container"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center_horizontal">
+
       <Button
          android:id="@+id/button_start_collecting_data"
          style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
@@ -30,21 +31,66 @@
          android:visibility="gone" />
    </RelativeLayout>
 
-   <include
-      android:id="@+id/sensor_data_list_header"
-      layout="@layout/header_sensor_data"
+   <RelativeLayout
+      android:id="@+id/orientation_data_collecting_buttons_container"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content" />
+      android:layout_height="wrap_content"
+      android:gravity="center_horizontal">
 
-   <!--<android.support.v7.widget.RecyclerView-->
-      <!--android:id="@+id/sensor_data_list"-->
-      <!--android:layout_width="match_parent"-->
-      <!--android:layout_height="match_parent" />-->
+      <Button
+         android:id="@+id/button_start_collecting_data_orientation"
+         style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/button_collecting_data_orientation_start" />
 
-   <ProgressBar
-      android:id="@+id/loading_indicator"
-      style="@style/Widget.AppCompat.ProgressBar"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"/>
+      <Button
+         android:id="@+id/button_stop_collecting_data_orientation"
+         style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/button_collecting_data_orientation_stop"
+         android:visibility="gone" />
+   </RelativeLayout>
+
+   <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center"
+      android:orientation="vertical">
+
+      <ProgressBar
+         android:id="@+id/loading_indicator"
+         style="@style/Widget.AppCompat.ProgressBar"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_gravity="center" />
+
+      <RelativeLayout
+         android:id="@+id/status_container"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_gravity="center">
+
+         <TextView
+            android:id="@+id/text_view_status_idle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/no_data_collecting"
+            android:textColor="@color/secondaryText" />
+
+         <TextView
+            android:id="@+id/text_view_status_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/data_collecting"
+            android:textColor="@color/colorPrimary"
+            android:visibility="gone" />
+
+      </RelativeLayout>
+
+   </LinearLayout>
 
 </LinearLayout>

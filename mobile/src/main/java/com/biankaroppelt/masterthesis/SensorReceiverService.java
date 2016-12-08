@@ -57,6 +57,11 @@ public class SensorReceiverService extends WearableListenerService {
                   ArrayList<DataMap> dataMaps = map.get(DataMapKeys.LIST);
                   list.addAll(dataMaps);
                }
+            } else if(path.startsWith("/sensorsOrientation/")) {
+               DataMap element = DataMapItem.fromDataItem(dataItem)
+                     .getDataMap();
+               list.add(element);
+
             }
          }
       }

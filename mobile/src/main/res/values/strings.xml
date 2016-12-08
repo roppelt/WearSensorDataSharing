@@ -2,15 +2,22 @@
    <string name="app_name">MasterThesis</string>
    <string name="data_status_receiving">Receiving sensor data</string>
    <string name="data_status_idle">Not receiving sensor data</string>
+
    <string name="button_collecting_data_start">Start collecting data</string>
    <string name="button_collecting_data_stop">Stop collecting data</string>
+   <string name="button_collecting_data_orientation_start">Start collecting data orientation</string>
+   <string name="button_collecting_data_orientation_stop">Stop collecting data orientation</string>
+
    <string name="sensor_data_list_title_1">Sensor</string>
    <string name="sensor_data_list_title_2">Accuracy</string>
    <string name="sensor_data_list_title_3">Values</string>
+
    <string name="action_delete_data">Delete data</string>
    <string name="action_send_data">Send data</string>
    <string name="popup_hint_data_title">Name of the data collection</string>
    <string name="popup_data_title">Send the data to the websever</string>
    <string name="popup_button_ok">Send</string>
    <string name="popup_button_cancel">Cancel</string>
+   <string name="no_data_collecting">No data collecting</string>
+   <string name="data_collecting">Data collecting...</string>
 </resources>
