@@ -9,10 +9,16 @@ import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.WearableListenerService;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class SensorReceiverService extends WearableListenerService {
    private static final String TAG = "SensorReceiverService";
@@ -42,29 +48,46 @@ public class SensorReceiverService extends WearableListenerService {
 
    @Override
    public void onDataChanged(DataEventBuffer dataEvents) {
-      ArrayList<DataMap> list = new ArrayList<>();
-
-      for (DataEvent dataEvent : dataEvents) {
-         if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
-            DataItem dataItem = dataEvent.getDataItem();
-            Uri uri = dataItem.getUri();
-            String path = uri.getPath();
-
-            if (path.startsWith("/sensors/")) {
-               DataMapItem item = DataMapItem.fromDataItem(dataItem);
-               DataMap map = item.getDataMap();
-               if (map.containsKey(DataMapKeys.LIST)) {
-                  ArrayList<DataMap> dataMaps = map.get(DataMapKeys.LIST);
-                  list.addAll(dataMaps);
-               }
-            } else if(path.startsWith("/sensorsOrientation/")) {
-               DataMap element = DataMapItem.fromDataItem(dataItem)
-                     .getDataMap();
-               list.add(element);
-
-            }
-         }
-      }
-      sensorManager.addSensorData(list);
+//      ArrayList<DataMap> list = new ArrayList<>();
+//
+//      for (DataEvent dataEvent : dataEvents) {
+//         if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
+//            DataItem dataItem = dataEvent.getDataItem();
+//            Uri uri = dataItem.getUri();
+//            String path = uri.getPath();
+//
+//            if (path.startsWith("/sensors/")) {
+//               DataMapItem item = DataMapItem.fromDataItem(dataItem);
+//               DataMap map = item.getDataMap();
+//               if (map.containsKey(DataMapKeys.LIST)) {
+//                  ArrayList<DataMap> dataMaps = map.get(DataMapKeys.LIST);
+//                  list.addAll(dataMaps);
+//               }
+//            } else if(path.startsWith("/sensorsOrientation/")) {
+//               DataMap element = DataMapItem.fromDataItem(dataItem)
+//                     .getDataMap();
+//               list.add(element);
+//
+//            } else if(path.startsWith("/sensorsAccelerometerGyroscope/")) {
+//               DataMap element = DataMapItem.fromDataItem(dataItem)
+//                     .getDataMap();
+//               list.add(element);
+//            }
+//         }
+//      }
+//      sensorManager.addSensorData(list);
    }
+
+
+   @Override
+   public void onMessageReceived(MessageEvent messageEvent) {
+      if(messageEvent.getPath().startsWith("/sensorsAccelerometerGyroscope/")) {
+         String data = new String(messageEvent.getData());
+         sensorManager.addSensorData(data);
+      } else if(messageEvent.getPath().startsWith("/sensorsOrientation/")) {
+         String data = new String(messageEvent.getData());
+         sensorManager.addSensorData(data);
+      }
+   }
+
 }

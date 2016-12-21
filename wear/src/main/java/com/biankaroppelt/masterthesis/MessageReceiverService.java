@@ -28,28 +28,56 @@ public class MessageReceiverService extends WearableListenerService {
    public void onMessageReceived(MessageEvent messageEvent) {
       Log.d(TAG, "Received message: " + messageEvent.getPath());
 
-      if (messageEvent.getPath()
-            .equals(ClientPaths.START_MEASUREMENT)) {
-         BusProvider.postOnMainThread(new StartMeasurementEvent());
-         startService(new Intent(this, SensorService.class));
-      }
-
-      if (messageEvent.getPath()
-            .equals(ClientPaths.STOP_MEASUREMENT)) {
-         BusProvider.postOnMainThread(new StopMeasurementEvent());
-         stopService(new Intent(this, SensorService.class));
-      }
+//      if (messageEvent.getPath()
+//            .equals(ClientPaths.START_MEASUREMENT)) {
+//         BusProvider.postOnMainThread(new StartMeasurementEvent());
+//         startService(new Intent(this, SensorService.class));
+//      }
+//
+//      if (messageEvent.getPath()
+//            .equals(ClientPaths.STOP_MEASUREMENT)) {
+//         BusProvider.postOnMainThread(new StopMeasurementEvent());
+//         stopService(new Intent(this, SensorService.class));
+//      }
 
       if (messageEvent.getPath()
             .equals(ClientPaths.START_MEASUREMENT_ORIENTATION)) {
          BusProvider.postOnMainThread(new StartMeasurementEvent());
-         startService(new Intent(this, SensorServiceOrientation.class));
+         Intent serviceIntent = new Intent(this, SensorServiceOrientation.class);
+         serviceIntent.putExtra("absolute", false);
+         startService(serviceIntent);
       }
 
       if (messageEvent.getPath()
             .equals(ClientPaths.STOP_MEASUREMENT_ORIENTATION)) {
          BusProvider.postOnMainThread(new StopMeasurementEvent());
          stopService(new Intent(this, SensorServiceOrientation.class));
+      }
+
+      if (messageEvent.getPath()
+            .equals(ClientPaths.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_1)) {
+         BusProvider.postOnMainThread(new StartMeasurementEvent());
+         Intent serviceIntent = new Intent(this, SensorServiceOrientation.class);
+         serviceIntent.putExtra("absolute", true);
+         startService(serviceIntent);
+      }
+
+      if (messageEvent.getPath()
+            .equals(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_1)) {
+         BusProvider.postOnMainThread(new StopMeasurementEvent());
+         stopService(new Intent(this, SensorServiceOrientation.class));
+      }
+
+      if (messageEvent.getPath()
+            .equals(ClientPaths.START_MEASUREMENT_ACCELEROMETER_GYROSCOPE)) {
+         BusProvider.postOnMainThread(new StartMeasurementEvent());
+         startService(new Intent(this, SensorServiceAccelerometerGyroscope.class));
+      }
+
+      if (messageEvent.getPath()
+            .equals(ClientPaths.STOP_MEASUREMENT_ACCELEROMETER_GYROSCOPE)) {
+         BusProvider.postOnMainThread(new StopMeasurementEvent());
+         stopService(new Intent(this, SensorServiceAccelerometerGyroscope.class));
       }
    }
 }

@@ -1,12 +1,18 @@
 <resources>
    <string name="app_name">MasterThesis</string>
+   <string name="title_new_pilot_study">New Pilot Study 1</string>
+
+
    <string name="data_status_receiving">Receiving sensor data</string>
    <string name="data_status_idle">Not receiving sensor data</string>
 
-   <string name="button_collecting_data_start">Start collecting data</string>
-   <string name="button_collecting_data_stop">Stop collecting data</string>
+   <!--<string name="button_collecting_data_start">Start collecting data</string>-->
+   <!--<string name="button_collecting_data_stop">Stop collecting data</string>-->
    <string name="button_collecting_data_orientation_start">Start collecting data orientation</string>
    <string name="button_collecting_data_orientation_stop">Stop collecting data orientation</string>
+   <string name="button_collecting_data_acc_gyr_start">Start collecting data Accelerometer and Gyroscope</string>
+   <string name="button_collecting_data_acc_gyr_stop">Stop collecting data Accelerometer and Gyroscope</string>
+   <string name="button_new_pilot_study_1">New Pilot Study 1</string>
 
    <string name="sensor_data_list_title_1">Sensor</string>
    <string name="sensor_data_list_title_2">Accuracy</string>
@@ -19,5 +25,14 @@
    <string name="popup_button_ok">Send</string>
    <string name="popup_button_cancel">Cancel</string>
    <string name="no_data_collecting">No data collecting</string>
-   <string name="data_collecting">Data collecting...</string>
+   <string name="data_collecting">Data collecting…</string>
+
+   <string name="pilot_study_hint_participant">Participant ID</string>
+   <string name="pilot_study_hint_hand_size">Hand size</string>
+   <string name="pilot_study_hint_handedness">Right handed</string>
+   <string name="pilot_study_hint_finger">Finger ID</string>
+   <string name="pilot_study_hint_rotation_dimension">Rotation Dimension ID</string>
+   <string name="pilot_study_button_send">Send data</string>
+   <string name="pilot_study_button_stop">Stop collecting data</string>
+   <string name="pilot_study_button_start">Start collecting data</string>
 </resources>

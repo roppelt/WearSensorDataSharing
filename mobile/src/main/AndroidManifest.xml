@@ -20,12 +20,18 @@
          android:value="@integer/google_play_services_version" />
       <activity
          android:name=".MobileActivity"
+         android:label="@string/app_name"
          android:theme="@style/AppTheme.NoActionBar">
          <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
             <category android:name="android.intent.category.LAUNCHER" />
          </intent-filter>
+      </activity>
+      <activity
+         android:name=".NewPilotStudy1Activity"
+         android:label="@string/title_new_pilot_study"
+         android:theme="@style/AppTheme.NoActionBar">
       </activity>
       <service android:name=".SensorReceiverService">
          <intent-filter>

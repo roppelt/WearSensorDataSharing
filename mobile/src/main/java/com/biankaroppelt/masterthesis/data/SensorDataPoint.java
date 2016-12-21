@@ -5,12 +5,15 @@ public class SensorDataPoint {
    private long timestamp;
    private float[] values;
    private int accuracy;
+   private boolean absolute;
 
-   public SensorDataPoint(Sensor sensor, long timestamp, int accuracy, float[] values) {
+   public SensorDataPoint(Sensor sensor, long timestamp, int accuracy, boolean absolute,
+         float[] values) {
       this.sensor = sensor;
       this.timestamp = timestamp;
       this.accuracy = accuracy;
       this.values = values;
+      this.absolute = absolute;
    }
 
    public float[] getValues() {
@@ -27,5 +30,9 @@ public class SensorDataPoint {
 
    public Sensor getSensor() {
       return sensor;
+   }
+
+   public boolean isAbsolute() {
+      return absolute;
    }
 }

@@ -7,12 +7,18 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.WatchViewStub;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.biankaroppelt.masterthesis.events.StartMeasurementEvent;
 import com.biankaroppelt.masterthesis.events.StopMeasurementEvent;
 import com.squareup.otto.Subscribe;
+
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+
+import java.net.URI;
 
 public class WearActivity extends WearableActivity {
 
@@ -77,4 +83,5 @@ public class WearActivity extends WearableActivity {
    public void onStopMeasurementEvent(final StopMeasurementEvent event) {
       mWakeLock.release();
    }
+
 }

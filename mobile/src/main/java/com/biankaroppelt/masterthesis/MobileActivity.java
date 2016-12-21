@@ -2,6 +2,7 @@ package com.biankaroppelt.masterthesis;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -37,7 +38,6 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 public class MobileActivity extends AppCompatActivity {
 
@@ -45,22 +45,21 @@ public class MobileActivity extends AppCompatActivity {
 
    private static final String TAG = MobileActivity.class.getSimpleName();
 
-   private Button startCollectingDataButton;
-   private Button stopCollectingDataButton;
+//   private Button startCollectingDataButton;
+//   private Button stopCollectingDataButton;
+   private Button buttonNewPilotStudy1;
    private Button startCollectingDataOrientationButton;
    private Button stopCollectingDataOrientationButton;
+   private Button startollectingDataAccelerometerGyroscope;
+   private Button stopollectingDataAccelerometerGyroscope;
    private TextView textViewStatusIdle;
    private TextView textViewStatusData;
    private CoordinatorLayout coordinatorLayout;
    private ProgressBar loadingIndicator;
-   //   private MenuItem menuItemDeleteData;
    private MenuItem menuItemSendData;
 
    private boolean isCollectingData;
    private ArrayList<SensorDataPoint> mItems;
-   private Date startTime;
-   private Date endTime;
-   //   private ExecutorService executor;
 
    private WebSocketClient mWebSocketClient;
 
@@ -68,12 +67,17 @@ public class MobileActivity extends AppCompatActivity {
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_mobile);
-      startCollectingDataButton = ((Button) findViewById(R.id.button_start_collecting_data));
-      stopCollectingDataButton = ((Button) findViewById(R.id.button_stop_collecting_data));
+//      startCollectingDataButton = ((Button) findViewById(R.id.button_start_collecting_data));
+//      stopCollectingDataButton = ((Button) findViewById(R.id.button_stop_collecting_data));
+      buttonNewPilotStudy1 = ((Button) findViewById(R.id.button_new_pilot_study_1));
       startCollectingDataOrientationButton =
             ((Button) findViewById(R.id.button_start_collecting_data_orientation));
       stopCollectingDataOrientationButton =
             ((Button) findViewById(R.id.button_stop_collecting_data_orientation));
+      startollectingDataAccelerometerGyroscope =
+            ((Button) findViewById(R.id.button_start_collecting_data_acc_gyr));
+      stopollectingDataAccelerometerGyroscope =
+            ((Button) findViewById(R.id.button_stop_collecting_data_acc_gyr));
       textViewStatusIdle = ((TextView) findViewById(R.id.text_view_status_idle));
       textViewStatusData = ((TextView) findViewById(R.id.text_view_status_data));
       coordinatorLayout = ((CoordinatorLayout) findViewById(R.id.coordinator_layout));
@@ -82,7 +86,6 @@ public class MobileActivity extends AppCompatActivity {
       remoteSensorManager = RemoteSensorManager.getInstance(this);
       isCollectingData = false;
       mItems = new ArrayList<>();
-      //      executor = Executors.newFixedThreadPool(1000);
       setupToolbar();
       setupButtonListener();
    }
@@ -100,7 +103,6 @@ public class MobileActivity extends AppCompatActivity {
 
    @Override
    public boolean onPrepareOptionsMenu(Menu menu) {
-      //      menuItemDeleteData = menu.findItem(R.id.action_delete_data);
       menuItemSendData = menu.findItem(R.id.action_send_data);
       menuItemSendData.setVisible(false);
       return super.onPrepareOptionsMenu(menu);
@@ -108,14 +110,12 @@ public class MobileActivity extends AppCompatActivity {
 
    private void hideMenuItems() {
       if (menuItemSendData != null) {
-         //         menuItemDeleteData.setVisible(false);
          menuItemSendData.setVisible(false);
       }
    }
 
    private void showMenuItems() {
       if (menuItemSendData != null) {
-         //         menuItemDeleteData.setVisible(true);
          menuItemSendData.setVisible(true);
       }
    }
@@ -123,9 +123,6 @@ public class MobileActivity extends AppCompatActivity {
    @Override
    public boolean onOptionsItemSelected(MenuItem item) {
       switch (item.getItemId()) {
-         //         case R.id.action_delete_data:
-         //            deleteData();
-         //            return true;
          case R.id.action_send_data:
             showSendDataDialog();
             return true;
@@ -135,24 +132,28 @@ public class MobileActivity extends AppCompatActivity {
    }
 
    private void deleteData() {
-      //      if (isCollectingData) {
-      //         stopCollectingData();
-      //      }
       mItems = new ArrayList<>();
       hideMenuItems();
    }
 
    private void setupButtonListener() {
-      startCollectingDataButton.setOnClickListener(new View.OnClickListener() {
+//      startCollectingDataButton.setOnClickListener(new View.OnClickListener() {
+//         @Override
+//         public void onClick(View view) {
+//            startCollectingData();
+//         }
+//      });
+//      stopCollectingDataButton.setOnClickListener(new View.OnClickListener() {
+//         @Override
+//         public void onClick(View view) {
+//            stopCollectingData();
+//         }
+//      });
+      buttonNewPilotStudy1.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            startCollectingData();
-         }
-      });
-      stopCollectingDataButton.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View view) {
-            stopCollectingData();
+            Intent intent = new Intent(MobileActivity.this, NewPilotStudy1Activity.class);
+            startActivity(intent);
          }
       });
       startCollectingDataOrientationButton.setOnClickListener(new View.OnClickListener() {
@@ -167,27 +168,65 @@ public class MobileActivity extends AppCompatActivity {
             stopCollectingDataOrientation();
          }
       });
+      startollectingDataAccelerometerGyroscope.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+            startCollectingDataAccelerometerGyroscope();
+         }
+      });
+      stopollectingDataAccelerometerGyroscope.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+            stopCollectingDataAccelerometerGyroscope();
+         }
+      });
    }
 
-   private void startCollectingData() {
+   private void startCollectingDataAccelerometerGyroscope() {
       if (isCollectingData) {
+//         stopCollectingData();
          stopCollectingDataOrientation();
       }
-      remoteSensorManager.startMeasurement();
+      remoteSensorManager.startMeasurementAccelerometerGyroscope();
       setDataCollecting(true);
-      startCollectingDataButton.setVisibility(View.GONE);
-      stopCollectingDataButton.setVisibility(View.VISIBLE);
+      startollectingDataAccelerometerGyroscope.setVisibility(View.GONE);
+      stopollectingDataAccelerometerGyroscope.setVisibility(View.VISIBLE);
+//      startCollectingDataButton.setEnabled(false);
       startCollectingDataOrientationButton.setEnabled(false);
    }
 
-   private void stopCollectingData() {
+   private void stopCollectingDataAccelerometerGyroscope() {
       showMenuItems();
-      remoteSensorManager.stopMeasurement();
+      remoteSensorManager.stopMeasurementAccelerometerGyroscope();
       setDataCollecting(false);
-      startCollectingDataButton.setVisibility(View.VISIBLE);
-      stopCollectingDataButton.setVisibility(View.GONE);
+      startollectingDataAccelerometerGyroscope.setVisibility(View.VISIBLE);
+      stopollectingDataAccelerometerGyroscope.setVisibility(View.GONE);
+//      startCollectingDataButton.setEnabled(true);
       startCollectingDataOrientationButton.setEnabled(true);
    }
+
+//   private void startCollectingData() {
+//      if (isCollectingData) {
+//         stopCollectingDataOrientation();
+//         stopCollectingDataAccelerometerGyroscope();
+//      }
+//      remoteSensorManager.startMeasurement();
+//      setDataCollecting(true);
+//      startCollectingDataButton.setVisibility(View.GONE);
+//      stopCollectingDataButton.setVisibility(View.VISIBLE);
+//      startCollectingDataOrientationButton.setEnabled(false);
+//      startollectingDataAccelerometerGyroscope.setEnabled(false);
+//   }
+
+//   private void stopCollectingData() {
+//      showMenuItems();
+//      remoteSensorManager.stopMeasurement();
+//      setDataCollecting(false);
+//      startCollectingDataButton.setVisibility(View.VISIBLE);
+//      stopCollectingDataButton.setVisibility(View.GONE);
+//      startCollectingDataOrientationButton.setEnabled(true);
+//      startollectingDataAccelerometerGyroscope.setEnabled(true);
+//   }
 
    private void setDataCollecting(boolean dataCollecting) {
       if (dataCollecting) {
@@ -195,35 +234,36 @@ public class MobileActivity extends AppCompatActivity {
          loadingIndicator.setVisibility(View.VISIBLE);
          textViewStatusData.setVisibility(View.VISIBLE);
          textViewStatusIdle.setVisibility(View.GONE);
-         startTime = new Date();
          isCollectingData = true;
       } else {
          textViewStatusIdle.setVisibility(View.VISIBLE);
          textViewStatusData.setVisibility(View.GONE);
          loadingIndicator.setVisibility(View.GONE);
-         endTime = new Date();
          isCollectingData = false;
       }
    }
 
    private void startCollectingDataOrientation() {
-      System.out.println("NEW MESSAGE: " + isCollectingData);
       if (isCollectingData) {
-         stopCollectingData();
+//         stopCollectingData();
+         stopCollectingDataAccelerometerGyroscope();
       }
       remoteSensorManager.startMeasurementOrientation();
       setDataCollecting(true);
       startCollectingDataOrientationButton.setVisibility(View.GONE);
       stopCollectingDataOrientationButton.setVisibility(View.VISIBLE);
-      startCollectingDataButton.setEnabled(false);
+//      startCollectingDataButton.setEnabled(false);
+      startollectingDataAccelerometerGyroscope.setEnabled(false);
    }
 
    private void stopCollectingDataOrientation() {
+      showMenuItems();
       remoteSensorManager.stopMeasurementOrientation();
       setDataCollecting(false);
       startCollectingDataOrientationButton.setVisibility(View.VISIBLE);
       stopCollectingDataOrientationButton.setVisibility(View.GONE);
-      startCollectingDataButton.setEnabled(true);
+//      startCollectingDataButton.setEnabled(true);
+      startollectingDataAccelerometerGyroscope.setEnabled(true);
    }
 
    @Override
@@ -243,7 +283,8 @@ public class MobileActivity extends AppCompatActivity {
       BusProvider.getInstance()
             .unregister(this);
       stopCollectingDataOrientation();
-      stopCollectingData();
+      stopCollectingDataAccelerometerGyroscope();
+//      stopCollectingData();
    }
 
    @Subscribe
@@ -267,6 +308,7 @@ public class MobileActivity extends AppCompatActivity {
       //      for (int i = 0; i < dataPointList.size(); i++) {
       // Building the string only of the last dataPoint
       SensorDataPoint sensorDataPoint = dataPointList.get(dataPointList.size() - 1);
+      string += sensorDataPoint.getSensor().getId() + ",";
       string += sensorDataPoint.getTimestamp() + ",";
       int valuesLength = Math.min(3, sensorDataPoint.getValues().length);
       for (int j = 0; j < valuesLength; j++) {
@@ -293,24 +335,20 @@ public class MobileActivity extends AppCompatActivity {
 
    @Subscribe
    public void onDataPointAddedEvent(final DataPointAddedEvent event) {
-      //            System.out.println("onDataPointAddedEvent: " + event.getCount());
-      //      dataCountTextView.setText(String.valueOf(event.getCount()));
    }
 
    @Subscribe
    public void onNoNodesAvailableEvent(final NoNodesAvailableEvent event) {
       Snackbar snackbar = Snackbar.make(coordinatorLayout, "No watch paired", Snackbar.LENGTH_LONG);
       snackbar.show();
-      stopCollectingData();
+//      stopCollectingData();
       stopCollectingDataOrientation();
+      stopCollectingDataAccelerometerGyroscope();
    }
 
    protected void showSendDataDialog() {
-
-      long diffInMs = endTime.getTime() - startTime.getTime();
-
-      long diffInSec = TimeUnit.MILLISECONDS.toSeconds(diffInMs);
-      if (diffInSec > 0) {
+      long diffInMs = (mItems.get(mItems.size()-1).getTimestamp() - mItems.get(0).getTimestamp());
+      if (diffInMs > 0) {
          System.out.println("Count sensor items: " + mItems.size() + " - Sample rate: " +
                (mItems.size() * 1000.0 / diffInMs));
       }
@@ -378,13 +416,11 @@ public class MobileActivity extends AppCompatActivity {
    private void connectWebSocket() {
 
       URI uri;
-      uri = URI.create("ws://192.168.178.31:1234/");
-      final String testString = "133409520000,30.5,10.2,66.6;133435440000,50.2,15.6,92.8";
+      uri = URI.create("ws://192.168.43.27:1234/");
 
       mWebSocketClient = new WebSocketClient(uri) {
          @Override
          public void onOpen(ServerHandshake serverHandshake) {
-            Log.i("Websocket", "Opened");
             System.out.println("websocket open");
          }
 
@@ -398,6 +434,10 @@ public class MobileActivity extends AppCompatActivity {
                      startCollectingDataOrientation();
                   } else if (message.equals("stop_orientation")) {
                      stopCollectingDataOrientation();
+                  } else if (message.equals("start_accelerometer_gyroscope")) {
+                     startCollectingDataAccelerometerGyroscope();
+                  } else if (message.equals("stop_accelerometer_gyroscope")) {
+                     stopCollectingDataAccelerometerGyroscope();
                   }
                }
             });
