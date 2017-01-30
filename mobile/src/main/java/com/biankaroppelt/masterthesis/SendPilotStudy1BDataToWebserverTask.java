@@ -2,12 +2,11 @@ package com.biankaroppelt.masterthesis;
 
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.events.BusProvider;
 import com.biankaroppelt.masterthesis.events.OnDataSentToServerEvent;
+import com.biankaroppelt.masterthesis.events.OnPS1BDataSentToServerEvent;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -21,26 +20,28 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class SendDataToWebserverTask extends AsyncTask<Object, Void, Boolean> {
+public class SendPilotStudy1BDataToWebserverTask extends AsyncTask<Object, Void, Boolean> {
 
-   private static final String TAG = SendDataToWebserverTask.class.getSimpleName();
+   private static final String TAG = SendPilotStudy1BDataToWebserverTask.class.getSimpleName();
    private HttpURLConnection urlConnection;
    private URL url;
+   private int tapType;
 
    @Override
    protected Boolean doInBackground(Object... urls) {
-      return sendDataCollection(((String) urls[0]), ((String) urls[1]),
-            ((ArrayList<SensorDataPoint>) urls[2]));
+      tapType = ((int) urls[2]);
+      return sendDataCollection(((String) urls[0]), ((int) urls[1]), ((int) urls[2]),
+            ((boolean) urls[3]), ((ArrayList<SensorDataPoint>) urls[4]));
    }
 
    // onPostExecute displays the results of the AsyncTask.
    @Override
    protected void onPostExecute(Boolean success) {
-      BusProvider.postOnMainThread(new OnDataSentToServerEvent(success));
+      BusProvider.postOnMainThread(new OnPS1BDataSentToServerEvent(success, tapType));
    }
 
-   private boolean sendDataCollection(String myurl, String dataSetTitle,
-         ArrayList<SensorDataPoint> data) {
+   private Boolean sendDataCollection(String myurl, int participantId, int tapTypeId,
+         boolean rightHanded, ArrayList<SensorDataPoint> data) {
       try {
          url = new URL(myurl);
       } catch (MalformedURLException e) {
@@ -60,7 +61,9 @@ public class SendDataToWebserverTask extends AsyncTask<Object, Void, Boolean> {
          // Append parameters to URL
          Uri.Builder builder = new Uri.Builder();
 
-         builder.appendQueryParameter("name", dataSetTitle);
+         builder.appendQueryParameter("participantId", String.valueOf(participantId));
+         builder.appendQueryParameter("tapTypeId", String.valueOf(tapTypeId));
+         builder.appendQueryParameter("rightHanded", String.valueOf(rightHanded));
          builder.appendQueryParameter("dataLength", String.valueOf(data.size()));
          for (int i = 0; i < data.size(); i++) {
             SensorDataPoint sensorDataPoint = data.get(i);
@@ -68,6 +71,8 @@ public class SendDataToWebserverTask extends AsyncTask<Object, Void, Boolean> {
                   String.valueOf(sensorDataPoint.getAccuracy()));
             builder.appendQueryParameter("data" + i + "[]",
                   String.valueOf(sensorDataPoint.getTimestamp()));
+            builder.appendQueryParameter("data" + i + "[]",
+                  String.valueOf(sensorDataPoint.isAbsolute()));
             for (int j = 0; j < 6; j++) {
                if (j >= sensorDataPoint.getValues().length) {
                   builder.appendQueryParameter("data" + i + "[]", "null");
@@ -140,9 +145,11 @@ public class SendDataToWebserverTask extends AsyncTask<Object, Void, Boolean> {
             }
             input.close();
             // Pass data to onPostExecute method
+            System.out.println(result);
             return true;
          } else {
-            System.out.println(urlConnection.getResponseCode() + " - " + urlConnection.getResponseMessage());
+            System.out.println(
+                  urlConnection.getResponseCode() + " - " + urlConnection.getResponseMessage());
             return false;
          }
       } catch (IOException e) {

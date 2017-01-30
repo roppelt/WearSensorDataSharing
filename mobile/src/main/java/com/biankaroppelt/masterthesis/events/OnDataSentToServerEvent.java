@@ -1,13 +1,13 @@
 package com.biankaroppelt.masterthesis.events;
 
 public class OnDataSentToServerEvent {
-   private String resultInfo;
+   private boolean success;
 
-   public OnDataSentToServerEvent(String resultInfo) {
-      this.resultInfo = resultInfo;
+   public OnDataSentToServerEvent(boolean success) {
+      this.success = success;
    }
 
-   public String getResultInfo() {
-      return resultInfo;
+   public boolean isSuccess() {
+      return success;
    }
 }

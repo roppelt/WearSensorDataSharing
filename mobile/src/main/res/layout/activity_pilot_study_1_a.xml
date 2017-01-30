@@ -26,18 +26,19 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:orientation="vertical"
-      android:padding="@dimen/activity_horizontal_margin"
       app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
       <android.support.design.widget.TextInputLayout
          android:layout_width="match_parent"
-         android:layout_height="wrap_content">
+         android:layout_height="wrap_content"
+         android:layout_marginLeft="@dimen/activity_horizontal_margin"
+         android:layout_marginRight="@dimen/activity_horizontal_margin"
+         android:layout_marginTop="@dimen/activity_vertical_margin">
 
          <android.support.design.widget.TextInputEditText
             android:id="@+id/input_participant"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:hint="@string/pilot_study_hint_participant"
             android:inputType="number"
             android:textColorHint="@color/secondaryText" />
@@ -48,23 +49,30 @@
          android:id="@+id/input_finger"
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:layout_marginBottom="@dimen/activity_vertical_margin"
+         android:layout_marginLeft="@dimen/activity_horizontal_margin"
+         android:layout_marginRight="@dimen/activity_horizontal_margin"
+         android:layout_marginTop="@dimen/activity_vertical_margin"
          android:hint="@string/pilot_study_hint_finger"
-         android:textColorHint="#05ab9a"
-         app:met_floatingLabel="normal" />
+         app:met_floatingLabel="highlight"
+         app:met_primaryColor="@color/colorAccent" />
 
       <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
          android:id="@+id/input_rotation_dimension"
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:layout_marginBottom="@dimen/activity_vertical_margin"
+         android:layout_marginLeft="@dimen/activity_horizontal_margin"
+         android:layout_marginRight="@dimen/activity_horizontal_margin"
+         android:layout_marginTop="@dimen/activity_vertical_margin"
          android:hint="@string/pilot_study_hint_rotation_dimension"
-         android:textColorHint="#05ab9a"
-         app:met_floatingLabel="normal" />
+         app:met_floatingLabel="highlight"
+         app:met_primaryColor="@color/colorAccent" />
 
       <android.support.design.widget.TextInputLayout
          android:layout_width="match_parent"
-         android:layout_height="wrap_content">
+         android:layout_height="wrap_content"
+         android:layout_marginLeft="@dimen/activity_horizontal_margin"
+         android:layout_marginRight="@dimen/activity_horizontal_margin"
+         android:layout_marginTop="@dimen/activity_vertical_margin">
 
          <android.support.design.widget.TextInputEditText
             android:id="@+id/input_hand_size"
@@ -72,6 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:hint="@string/pilot_study_hint_hand_size"
+            android:text="None"
             android:textColorHint="@color/secondaryText" />
 
       </android.support.design.widget.TextInputLayout>
@@ -80,48 +89,60 @@
          android:id="@+id/input_handedness"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginBottom="@dimen/activity_vertical_margin"
+         android:layout_marginLeft="@dimen/activity_horizontal_margin"
+         android:layout_marginRight="@dimen/activity_horizontal_margin"
+         android:layout_marginTop="@dimen/activity_vertical_margin"
          android:checked="true"
          android:text="@string/pilot_study_hint_handedness" />
-
-      <RelativeLayout
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:gravity="center_horizontal">
-
-         <Button
-            android:id="@+id/button_data_start"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pilot_study_button_start" />
-
-         <Button
-            android:id="@+id/button_data_stop"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pilot_study_button_stop"
-            android:visibility="gone" />
-
-         <Button
-            android:id="@+id/button_data_send"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pilot_study_button_send"
-            android:visibility="gone" />
-
-         <ProgressBar
-            android:id="@+id/loading_indicator"
-            style="@style/Widget.AppCompat.ProgressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone" />
-      </RelativeLayout>
-
    </LinearLayout>
+
+   <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom"
+      android:layout_marginBottom="60dp">
+
+      <Button
+         android:id="@+id/button_data_start"
+         style="@style/Base.Widget.AppCompat.Button.Colored"
+         android:layout_width="match_parent"
+         android:layout_height="60dp"
+         android:layout_alignParentBottom="true"
+         android:gravity="center"
+         android:minHeight="0dp"
+         android:minWidth="0dp"
+         android:text="@string/pilot_study_button_start" />
+
+      <Button
+         android:id="@+id/button_data_stop"
+         style="@style/Base.Widget.AppCompat.Button.Colored"
+         android:layout_width="match_parent"
+         android:layout_height="60dp"
+         android:layout_alignParentBottom="true"
+         android:layout_margin="-5dip"
+         android:gravity="center"
+         android:text="@string/pilot_study_button_stop"
+         android:visibility="gone" />
+
+      <ProgressBar
+         android:id="@+id/loading_indicator"
+         style="@style/Widget.AppCompat.ProgressBar"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"
+         android:layout_centerHorizontal="true"
+         android:visibility="gone" />
+   </RelativeLayout>
+
+   <Button
+      android:id="@+id/button_data_send"
+      style="@style/Base.Widget.AppCompat.Button.Colored"
+      android:layout_width="match_parent"
+      android:layout_height="60dp"
+      android:layout_alignParentBottom="true"
+      android:layout_gravity="bottom"
+      android:gravity="center"
+      android:text="@string/pilot_study_button_send" />
 
 </android.support.design.widget.CoordinatorLayout>
 

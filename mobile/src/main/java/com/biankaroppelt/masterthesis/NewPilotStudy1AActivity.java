@@ -1,8 +1,5 @@
 package com.biankaroppelt.masterthesis;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -24,7 +21,7 @@ import com.biankaroppelt.masterthesis.events.BusProvider;
 import com.biankaroppelt.masterthesis.events.DataPointAddedEvent;
 import com.biankaroppelt.masterthesis.events.NewSensorEvent;
 import com.biankaroppelt.masterthesis.events.NoNodesAvailableEvent;
-import com.biankaroppelt.masterthesis.events.OnDataSentToServerEvent;
+import com.biankaroppelt.masterthesis.events.OnPS1ADataSentToServerEvent;
 import com.biankaroppelt.masterthesis.events.SensorUpdatedEvent;
 import com.squareup.otto.Subscribe;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
@@ -36,11 +33,11 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.net.URI;
 import java.util.ArrayList;
 
-public class NewPilotStudy1Activity extends AppCompatActivity {
+public class NewPilotStudy1AActivity extends AppCompatActivity {
 
    private RemoteSensorManager remoteSensorManager;
 
-   private static final String TAG = NewPilotStudy1Activity.class.getSimpleName();
+   private static final String TAG = NewPilotStudy1AActivity.class.getSimpleName();
 
    //   private Button startCollectingDataButton;
    //   private Button stopCollectingDataButton;
@@ -55,11 +52,14 @@ public class NewPilotStudy1Activity extends AppCompatActivity {
    private CoordinatorLayout coordinatorLayout;
    private ProgressBar loadingIndicator;
 
-   private ArrayList<SensorDataPoint> mItems;
+   //   private ArrayList<SensorDataPoint> mItems;
 
    private WebSocketClient mWebSocketClient;
    private int selectedRotationDimensionId;
    private int selectedFingerId;
+
+   private ArrayList<SensorDataPoint>[][] mItems;
+   private boolean[][] mItemsSaved;
 
    String[] SPINNER_FINGER_LIST =
          { "Pinky", "Ring finger", "Middle finger", "Index finger", "Thumb" };
@@ -69,7 +69,7 @@ public class NewPilotStudy1Activity extends AppCompatActivity {
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      setContentView(R.layout.activity_pilot_study_1);
+      setContentView(R.layout.activity_pilot_study_1_a);
       buttonDataSend = ((Button) findViewById(R.id.button_data_send));
       buttonDataStart = ((Button) findViewById(R.id.button_data_start));
       buttonDataStop = ((Button) findViewById(R.id.button_data_stop));
@@ -82,7 +82,9 @@ public class NewPilotStudy1Activity extends AppCompatActivity {
       loadingIndicator = ((ProgressBar) findViewById(R.id.loading_indicator));
 
       remoteSensorManager = RemoteSensorManager.getInstance(this);
-      mItems = new ArrayList<>();
+      mItems = new ArrayList[SPINNER_FINGER_LIST.length][SPINNER_ROTATION_DIMENSION_LIST.length];
+      mItemsSaved = new boolean[SPINNER_FINGER_LIST.length][SPINNER_ROTATION_DIMENSION_LIST.length];
+      //      mItems = new ArrayList<>();
       setupToolbar();
       setupListener();
    }
@@ -152,29 +154,29 @@ public class NewPilotStudy1Activity extends AppCompatActivity {
    }
 
    private void startCollectingData() {
-      mItems = new ArrayList<>();
+      //      mItems = new ArrayList<>();
       buttonDataStop.setVisibility(View.VISIBLE);
       buttonDataStart.setVisibility(View.GONE);
-      buttonDataSend.setVisibility(View.GONE);
+      //      buttonDataSend.setVisibility(View.GONE);
       loadingIndicator.setVisibility(View.GONE);
-      remoteSensorManager.startMeasurementOrientationPilotStudy1();
+      remoteSensorManager.startMeasurementOrientationPilotStudy1A();
    }
 
    private void stopCollectingData() {
-      buttonDataSend.setVisibility(View.VISIBLE);
+      //      buttonDataSend.setVisibility(View.VISIBLE);
       buttonDataStop.setVisibility(View.GONE);
-      buttonDataStart.setVisibility(View.GONE);
+      buttonDataStart.setVisibility(View.VISIBLE);
       loadingIndicator.setVisibility(View.GONE);
       remoteSensorManager.stopMeasurementOrientationPilotStudy1();
    }
 
    private void sendCollectedData() {
       loadingIndicator.setVisibility(View.VISIBLE);
-      buttonDataSend.setVisibility(View.GONE);
+      //      buttonDataSend.setVisibility(View.GONE);
       buttonDataStart.setVisibility(View.GONE);
       buttonDataStop.setVisibility(View.GONE);
 
-      sendData();
+      sendAllData();
    }
 
    @Override
@@ -203,7 +205,30 @@ public class NewPilotStudy1Activity extends AppCompatActivity {
    @Subscribe
    public void onSensorUpdatedEvent(final SensorUpdatedEvent event) {
       System.out.println("onSensorUpdatedEvent");
-      mItems.addAll(event.getDataPointList());
+      if (mItems[selectedFingerId][selectedRotationDimensionId] == null) {
+         mItems[selectedFingerId][selectedRotationDimensionId] = new ArrayList<>();
+      }
+      mItems[selectedFingerId][selectedRotationDimensionId].addAll(event.getDataPointList());
+      System.out.println("new things");
+      boolean enableSendButton = true;
+      for (int finger = 0; finger < mItems.length; finger++) {
+         for (int rotationDimension = 0; rotationDimension < mItems[finger].length;
+              rotationDimension++) {
+            if (mItems[finger][rotationDimension] != null &&
+                  mItems[finger][rotationDimension].size() > 0) {
+               System.out.println("new " + finger + " - " + rotationDimension + ": " +
+                     mItems[finger][rotationDimension].size());
+            } else {
+               enableSendButton = false;
+               System.out.println("ENABLED FALSE: " + finger + " - " + rotationDimension);
+            }
+         }
+      }
+      if (enableSendButton) {
+         //         buttonDataSend.setEnabled(true);
+      }
+      //      ArrayList<SensorDataPoint> mItemsTemp;
+      //      mItems.addAll(event.getDataPointList());
       if (mWebSocketClient != null && mWebSocketClient.getReadyState()
             .equals(WebSocket.READYSTATE.OPEN)) {
          mWebSocketClient.send(buildSendString(event.getDataPointList()));
@@ -235,16 +260,32 @@ public class NewPilotStudy1Activity extends AppCompatActivity {
    }
 
    @Subscribe
-   public void onOnDataSentToServerEvent(final OnDataSentToServerEvent event) {
-      //      loadingIndicator.setVisibility(View.GONE);
-      System.out.println(event.getResultInfo());
-      Snackbar snackbar =
-            Snackbar.make(coordinatorLayout, event.getResultInfo(), Snackbar.LENGTH_LONG);
+   public void onOnPS1ADataSentToServerEvent(final OnPS1ADataSentToServerEvent event) {
+      boolean success = event.isSuccess();
+      System.out.println(success);
+      String snackbarString = "The dataset is stored in the database";
+      if (success) {
+         mItemsSaved[event.getFinger()][event.getRotationDimension()] = true;
+      } else {
+         sendData(event.getFinger(), event.getRotationDimension());
+         snackbarString = "unsuccessful (most of the time localtunnel didn't work) - Trying again";
+      }
+      Snackbar snackbar = Snackbar.make(coordinatorLayout, snackbarString, Snackbar.LENGTH_LONG);
       snackbar.show();
-      buttonDataStart.setVisibility(View.VISIBLE);
-      loadingIndicator.setVisibility(View.GONE);
-      buttonDataSend.setVisibility(View.GONE);
-      buttonDataStop.setVisibility(View.GONE);
+
+      boolean resetButtons = true;
+      for (int i = 0; i < mItemsSaved.length; i++) {
+         for (int j = 0; j < mItemsSaved[i].length; j++) {
+            if (!mItemsSaved[i][j]) {
+               resetButtons = false;
+            }
+         }
+      }
+      if (resetButtons) {
+         buttonDataStart.setVisibility(View.VISIBLE);
+         loadingIndicator.setVisibility(View.GONE);
+         buttonDataStop.setVisibility(View.GONE);
+      }
    }
 
    @Subscribe
@@ -258,48 +299,65 @@ public class NewPilotStudy1Activity extends AppCompatActivity {
       stopCollectingData();
    }
 
-   private void sendData() {
-      long diffInMs = (mItems.get(mItems.size() - 1)
-            .getTimestamp() - mItems.get(0)
-            .getTimestamp());
-      if (diffInMs > 0) {
-         System.out.println("Count sensor items: " + mItems.size() + " - Sample rate: " +
-               (mItems.size() * 1000.0 / diffInMs));
+   private void sendAllData() {
+      for (int finger = 0; finger < mItems.length; finger++) {
+         for (int rotationDimension = 0; rotationDimension < mItems[finger].length;
+              rotationDimension++) {
+            System.out.println("send " + finger + " - " + rotationDimension + ": " +
+                  mItems[finger][rotationDimension]);
+            sendData(finger, rotationDimension);
+         }
       }
+   }
 
+   private void sendData(int finger, int rotationDimension) {
       int participantId = Integer.parseInt(inputParticipant.getText()
             .toString());
       String handSizeString = inputHandSize.getText()
             .toString();
-      Boolean rightHanded = checkBoxHandedness.isChecked();
-
-      ConnectivityManager connMgr =
-            (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-      NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-      if (networkInfo != null && networkInfo.isConnected()) {
-         // fetch data
-         String stringUrl =
-               "http://master.localtunnel.me/master/new_data_collection_pilot_study_1.php";
-
-         //         final int dataPartitioningSize = mItems.size() / 500;
-         //         for(int i = 0; i < dataPartitioningSize; i++) {
-         //            final ArrayList<SensorDataPoint> tempList =
-         //                  new ArrayList<>(mItems.subList(i * 500, ((i + 1) * 500)));
-         new SendPilotStudy1DataToWebserverTask().execute(stringUrl, participantId,
-               selectedFingerId, selectedRotationDimensionId, handSizeString, rightHanded, mItems);
-
-         //         }
-         //         final ArrayList<SensorDataPoint> tempList = new ArrayList<>(mItems.subList
-         // (dataPartitioningSize*500, mItems.size()));
-         //         new SendDataToWebserverTask().execute(stringUrl, dataSetTitle, tempList);
-
+      boolean rightHanded = checkBoxHandedness.isChecked();
+      String stringUrl =
+            "http://192.168.43.27:8080/master/new_data_collection_pilot_study_1A.php";
+      if (mItems[finger][rotationDimension] != null) {
+         new SendPilotStudy1ADataToWebserverTask().execute(stringUrl, participantId, finger,
+               rotationDimension, handSizeString, rightHanded, mItems[finger][rotationDimension]);
       } else {
-         // display error
-         Snackbar snackbar = Snackbar.make(coordinatorLayout, "No network connection available.",
-               Snackbar.LENGTH_LONG);
-         snackbar.show();
+         System.out.println("NULL: " + finger + " - " + rotationDimension);
       }
    }
+
+   //   private void sendData() {
+   //      long diffInMs = (mItems.get(mItems.size() - 1)
+   //            .getTimestamp() - mItems.get(0)
+   //            .getTimestamp());
+   //      if (diffInMs > 0) {
+   //         System.out.println("Count sensor items: " + mItems.size() + " - Sample rate: " +
+   //               (mItems.size() * 1000.0 / diffInMs));
+   //      }
+
+   //      ConnectivityManager connMgr =
+   //            (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+   //      NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+   //      if (networkInfo != null && networkInfo.isConnected()) {
+
+   //         final int dataPartitioningSize = mItems.size() / 500;
+   //         for(int i = 0; i < dataPartitioningSize; i++) {
+   //            final ArrayList<SensorDataPoint> tempList =
+   //                  new ArrayList<>(mItems.subList(i * 500, ((i + 1) * 500)));
+
+   //         }
+   //         final ArrayList<SensorDataPoint> tempList = new ArrayList<>(mItems.subList
+   // (dataPartitioningSize*500, mItems.size()));
+   //         new SendDataToWebserverTask().execute(stringUrl, dataSetTitle, tempList);
+
+   //      } else {
+   //         // display error
+   //         Snackbar snackbar = Snackbar.make(coordinatorLayout, "No network connection
+   // available.",
+   //               Snackbar.LENGTH_LONG);
+   //         snackbar.show();
+   //      }
+   //   }
 
    private void connectWebSocket() {
 
@@ -322,6 +380,38 @@ public class NewPilotStudy1Activity extends AppCompatActivity {
                      startCollectingData();
                   } else if (message.equals("stop_orientation")) {
                      stopCollectingData();
+                  } else if (message.startsWith("study_1a_finger")) {
+                     String[] values = message.split(",");
+                     int fingerIdFromProcessing = Integer.parseInt(values[1]);
+                     System.out.println("FingerId: " + fingerIdFromProcessing);
+                     spinnerFinger.setText(SPINNER_FINGER_LIST[fingerIdFromProcessing]);
+                     selectedFingerId = fingerIdFromProcessing;
+                     System.out.println("FING: selectedFingerId: " + selectedFingerId +
+                           " - selectedRotationDimensionId: " + selectedRotationDimensionId);
+                  } else if (message.startsWith("study_1a_rotation_dimension")) {
+                     String[] values = message.split(",");
+                     int rotationDimensionIdFromProcessing = Integer.parseInt(values[1]);
+                     System.out.println(
+                           "RotationDimensionId: " + rotationDimensionIdFromProcessing);
+                     spinnerDimension.setText(
+                           SPINNER_ROTATION_DIMENSION_LIST[rotationDimensionIdFromProcessing]);
+                     selectedRotationDimensionId = rotationDimensionIdFromProcessing;
+                     System.out.println("RT: selectedFingerId: " + selectedFingerId +
+                           " - selectedRotationDimensionId: " + selectedRotationDimensionId);
+                  } else if (message.startsWith("study_1a_back")) {
+                     String[] values = message.split(",");
+                     int backFingerIdFromProcessing = Integer.parseInt(values[1]);
+                     int backRotationDimensionIdFromProcessing = Integer.parseInt(values[2]);
+                     mItems[backFingerIdFromProcessing][backRotationDimensionIdFromProcessing] =
+                           new ArrayList<>();
+                     System.out.println("BACK: selectedFingerId: " + selectedFingerId +
+                           " - selectedRotationDimensionId: " + selectedRotationDimensionId);
+
+                     System.out.println("BACK: backfingerid: " + backFingerIdFromProcessing +
+                           " - backrotationdimensionid: " + backRotationDimensionIdFromProcessing);
+                  } else if (message.startsWith("study_1a_participant_id")) {
+                     String[] values = message.split(",");
+                     inputParticipant.setText(values[1]);
                   }
                }
             });
@@ -335,6 +425,10 @@ public class NewPilotStudy1Activity extends AppCompatActivity {
          @Override
          public void onError(Exception e) {
             Log.i("Websocket", "Error " + e.getMessage());
+            Snackbar snackbar =
+                  Snackbar.make(coordinatorLayout, "Websocket error - retry", Snackbar.LENGTH_LONG);
+            snackbar.show();
+            connectWebSocket();
          }
       };
       mWebSocketClient.connect();

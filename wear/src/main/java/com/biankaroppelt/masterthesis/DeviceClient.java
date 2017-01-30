@@ -209,15 +209,17 @@ public class DeviceClient {
                @Override
                public void run() {
                   googleApiClient.blockingConnect(CLIENT_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
-                  Wearable.NodeApi.getConnectedNodes(googleApiClient)
-                        .setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
-                           @Override
-                           public void onResult(
-                                 @NonNull NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
-                              nodes = getConnectedNodesResult.getNodes();
-                              sendMessageToNodes(path, data);
-                           }
-                        });
+                  nodes = Wearable.NodeApi.getConnectedNodes(googleApiClient).await().getNodes();
+                  sendMessageToNodes(path, data);
+//                        .setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
+//                           @Override
+//                           public void onResult(
+//                                 @NonNull NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
+//                              Log.e(TAG, "NODE SUCCESS");
+//                              nodes = getConnectedNodesResult.getNodes();
+//                              sendMessageToNodes(path, data);
+//                           }
+//                        });
                }
             }).start();
          } else {

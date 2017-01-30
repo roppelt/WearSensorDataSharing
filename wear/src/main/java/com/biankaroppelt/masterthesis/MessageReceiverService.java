@@ -55,7 +55,7 @@ public class MessageReceiverService extends WearableListenerService {
       }
 
       if (messageEvent.getPath()
-            .equals(ClientPaths.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_1)) {
+            .equals(ClientPaths.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A)) {
          BusProvider.postOnMainThread(new StartMeasurementEvent());
          Intent serviceIntent = new Intent(this, SensorServiceOrientation.class);
          serviceIntent.putExtra("absolute", true);
@@ -63,7 +63,23 @@ public class MessageReceiverService extends WearableListenerService {
       }
 
       if (messageEvent.getPath()
-            .equals(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_1)) {
+            .equals(ClientPaths.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_2)) {
+         System.out.println("START 2");
+         BusProvider.postOnMainThread(new StartMeasurementEvent());
+         Intent serviceIntent = new Intent(this, SensorServiceOrientation.class);
+         serviceIntent.putExtra("absolute", true);
+         startService(serviceIntent);
+      }
+
+      if (messageEvent.getPath()
+            .equals(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A)) {
+         BusProvider.postOnMainThread(new StopMeasurementEvent());
+         stopService(new Intent(this, SensorServiceOrientation.class));
+      }
+
+      if (messageEvent.getPath()
+            .equals(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_2)) {
+         System.out.println("STOP 2");
          BusProvider.postOnMainThread(new StopMeasurementEvent());
          stopService(new Intent(this, SensorServiceOrientation.class));
       }

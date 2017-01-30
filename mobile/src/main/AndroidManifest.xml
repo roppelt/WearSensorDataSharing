@@ -29,9 +29,22 @@
          </intent-filter>
       </activity>
       <activity
-         android:name=".NewPilotStudy1Activity"
-         android:label="@string/title_new_pilot_study"
-         android:theme="@style/AppTheme.NoActionBar">
+         android:name=".NewPilotStudy1AActivity"
+         android:label="@string/title_new_pilot_study_1a"
+         android:theme="@style/AppTheme.NoActionBar"
+         android:parentActivityName=".MobileActivity">
+      </activity>
+      <activity
+         android:name=".NewPilotStudy1BActivity"
+         android:label="@string/title_new_pilot_study_1b"
+         android:theme="@style/AppTheme.NoActionBar"
+         android:parentActivityName=".MobileActivity">
+      </activity>
+      <activity
+         android:name=".NewPilotStudy2Activity"
+         android:label="@string/title_new_pilot_study_2"
+         android:theme="@style/AppTheme.NoActionBar"
+         android:parentActivityName=".MobileActivity">
       </activity>
       <service android:name=".SensorReceiverService">
          <intent-filter>

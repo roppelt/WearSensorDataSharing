@@ -5,7 +5,6 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.biankaroppelt.datalogger.ClientPaths;
-import com.biankaroppelt.datalogger.DataMapKeys;
 import com.biankaroppelt.masterthesis.data.Sensor;
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.data.SensorNames;
@@ -16,13 +15,11 @@ import com.biankaroppelt.masterthesis.events.SensorUpdatedEvent;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -90,31 +87,31 @@ public class RemoteSensorManager {
       return sensor;
    }
 
-//   public synchronized void addSensorData(ArrayList<DataMap> list) {
-//      ArrayList<SensorDataPoint> sensorDataPointList = new ArrayList<>();
-//      for (DataMap element : list) {
-//         int index = element.getInt(DataMapKeys.INDEX);
-//         int sensorType = element.getInt(DataMapKeys.SENSOR_TYPE);
-//         int accuracy = element.getInt(DataMapKeys.ACCURACY);
-//         long timestamp = element.getLong(DataMapKeys.TIMESTAMP);
-//         float[] values = element.getFloatArray(DataMapKeys.VALUES);
-//         System.out.println("Index: " + index);
-//
-//         Sensor sensor = getOrCreateSensor(sensorType);
-//
-//         // TODO: We probably want to pull sensor data point objects from a pool here
-//         SensorDataPoint dataPoint = new SensorDataPoint(sensor, timestamp, accuracy, values);
-//
-//         sensor.addDataPoint(dataPoint);
-//         sensorDataPointList.add(dataPoint);
-//      }
-//      BusProvider.postOnMainThread(new SensorUpdatedEvent(sensorDataPointList));
-//   }
+   //   public synchronized void addSensorData(ArrayList<DataMap> list) {
+   //      ArrayList<SensorDataPoint> sensorDataPointList = new ArrayList<>();
+   //      for (DataMap element : list) {
+   //         int index = element.getInt(DataMapKeys.INDEX);
+   //         int sensorType = element.getInt(DataMapKeys.SENSOR_TYPE);
+   //         int accuracy = element.getInt(DataMapKeys.ACCURACY);
+   //         long timestamp = element.getLong(DataMapKeys.TIMESTAMP);
+   //         float[] values = element.getFloatArray(DataMapKeys.VALUES);
+   //         System.out.println("Index: " + index);
+   //
+   //         Sensor sensor = getOrCreateSensor(sensorType);
+   //
+   //         // TODO: We probably want to pull sensor data point objects from a pool here
+   //         SensorDataPoint dataPoint = new SensorDataPoint(sensor, timestamp, accuracy, values);
+   //
+   //         sensor.addDataPoint(dataPoint);
+   //         sensorDataPointList.add(dataPoint);
+   //      }
+   //      BusProvider.postOnMainThread(new SensorUpdatedEvent(sensorDataPointList));
+   //   }
 
    public synchronized void addSensorData(String data) {
       ArrayList<SensorDataPoint> sensorDataPointList = new ArrayList<>();
       String[] dataList = data.split(";");
-      if(dataList.length > 0) {
+      if (dataList.length > 0) {
          int index = Integer.parseInt(dataList[0]);
          int sensorType = Integer.parseInt(dataList[1]);
          int accuracy = Integer.parseInt(dataList[2]);
@@ -125,7 +122,8 @@ public class RemoteSensorManager {
          Sensor sensor = getOrCreateSensor(sensorType);
 
          // TODO: We probably want to pull sensor data point objects from a pool here
-         SensorDataPoint dataPoint = new SensorDataPoint(sensor, timestamp, accuracy, absolute, values);
+         SensorDataPoint dataPoint =
+               new SensorDataPoint(sensor, timestamp, accuracy, absolute, values);
 
          sensor.addDataPoint(dataPoint);
          sensorDataPointList.add(dataPoint);
@@ -144,23 +142,23 @@ public class RemoteSensorManager {
       return result.isSuccess();
    }
 
-//   public void startMeasurement() {
-//      executorService.submit(new Runnable() {
-//         @Override
-//         public void run() {
-//            controlMeasurementInBackground(ClientPaths.START_MEASUREMENT);
-//         }
-//      });
-//   }
-//
-//   public void stopMeasurement() {
-//      executorService.submit(new Runnable() {
-//         @Override
-//         public void run() {
-//            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT);
-//         }
-//      });
-//   }
+   //   public void startMeasurement() {
+   //      executorService.submit(new Runnable() {
+   //         @Override
+   //         public void run() {
+   //            controlMeasurementInBackground(ClientPaths.START_MEASUREMENT);
+   //         }
+   //      });
+   //   }
+   //
+   //   public void stopMeasurement() {
+   //      executorService.submit(new Runnable() {
+   //         @Override
+   //         public void run() {
+   //            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT);
+   //         }
+   //      });
+   //   }
 
    public void startMeasurementOrientation() {
       executorService.submit(new Runnable() {
@@ -180,11 +178,12 @@ public class RemoteSensorManager {
       });
    }
 
-   public void startMeasurementOrientationPilotStudy1() {
+   public void startMeasurementOrientationPilotStudy1A() {
       executorService.submit(new Runnable() {
          @Override
          public void run() {
-            controlMeasurementInBackground(ClientPaths.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_1);
+            controlMeasurementInBackground(
+                  ClientPaths.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A);
          }
       });
    }
@@ -193,7 +192,25 @@ public class RemoteSensorManager {
       executorService.submit(new Runnable() {
          @Override
          public void run() {
-            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_1);
+            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A);
+         }
+      });
+   }
+
+   public void startMeasurementOrientationPilotStudy2() {
+      executorService.submit(new Runnable() {
+         @Override
+         public void run() {
+            controlMeasurementInBackground(ClientPaths.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_2);
+         }
+      });
+   }
+
+   public void stopMeasurementOrientationPilotStudy2() {
+      executorService.submit(new Runnable() {
+         @Override
+         public void run() {
+            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_2);
          }
       });
    }
@@ -216,7 +233,6 @@ public class RemoteSensorManager {
       });
    }
 
-
    private void controlMeasurementInBackground(final String path) {
       if (validateConnection()) {
          List<Node> nodes = Wearable.NodeApi.getConnectedNodes(googleApiClient)
@@ -224,7 +240,7 @@ public class RemoteSensorManager {
                .getNodes();
          Log.d(TAG, "Sending to nodes: " + nodes.size());
 
-         if(nodes.isEmpty()) {
+         if (nodes.isEmpty() || nodes.size() == 0) {
             BusProvider.postOnMainThread(new NoNodesAvailableEvent());
          } else {
 
@@ -234,22 +250,22 @@ public class RemoteSensorManager {
                      .setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
                         @Override
                         public void onResult(MessageApi.SendMessageResult sendMessageResult) {
-                           //                        Log.d(TAG, "controlMeasurementInBackground(" + path + "): " +
+                           //                        Log.d(TAG, "controlMeasurementInBackground("
+                           // + path + "): " +
                            //                              sendMessageResult.getStatus()
                            //                                    .isSuccess());
                         }
                      });
             }
          }
-
       } else {
          Log.w(TAG, "No connection possible");
       }
    }
 
-
    private float[] parseStringAsList(String s) {
-      String[] listString = s.substring(1, s.length() - 1).split(",");
+      String[] listString = s.substring(1, s.length() - 1)
+            .split(",");
       float[] output = new float[listString.length];
       for (int i = 0; i < listString.length; i++) {
          output[i] = Float.parseFloat(listString[i]);
