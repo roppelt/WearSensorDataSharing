@@ -131,6 +131,13 @@
          android:layout_height="wrap_content"
          android:text="@string/button_new_pilot_study_2" />
 
+      <Button
+         android:id="@+id/button_new_main_study"
+         style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/button_new_main_study" />
+
    </LinearLayout>
 
 </LinearLayout>

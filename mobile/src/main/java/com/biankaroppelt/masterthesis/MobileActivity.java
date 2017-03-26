@@ -47,6 +47,7 @@ public class MobileActivity extends AppCompatActivity {
    private Button buttonNewPilotStudy1B;
    private Button buttonNewPilotStudy1A;
    private Button buttonNewPilotStudy2;
+   private Button buttonNewMainStudy;
    private Button startCollectingDataOrientationButton;
    private Button stopCollectingDataOrientationButton;
    private Button startollectingDataAccelerometerGyroscope;
@@ -69,6 +70,7 @@ public class MobileActivity extends AppCompatActivity {
       buttonNewPilotStudy1A = ((Button) findViewById(R.id.button_new_pilot_study_1a));
       buttonNewPilotStudy1B = ((Button) findViewById(R.id.button_new_pilot_study_1b));
       buttonNewPilotStudy2 = ((Button) findViewById(R.id.button_new_pilot_study_2));
+      buttonNewMainStudy = ((Button) findViewById(R.id.button_new_main_study));
       startCollectingDataOrientationButton =
             ((Button) findViewById(R.id.button_start_collecting_data_orientation));
       stopCollectingDataOrientationButton =
@@ -155,6 +157,13 @@ public class MobileActivity extends AppCompatActivity {
          @Override
          public void onClick(View view) {
             Intent intent = new Intent(MobileActivity.this, NewPilotStudy2Activity.class);
+            startActivity(intent);
+         }
+      });
+      buttonNewMainStudy.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+            Intent intent = new Intent(MobileActivity.this, NewMainStudyActivity.class);
             startActivity(intent);
          }
       });

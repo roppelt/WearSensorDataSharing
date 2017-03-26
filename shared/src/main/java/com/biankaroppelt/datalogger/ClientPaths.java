@@ -13,6 +13,10 @@ public class ClientPaths {
          "/startOrientationPilotStudy2";
    public static final String STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_2 =
          "/stopOrientationPilotStudy2";
+   public static final String START_MEASUREMENT_ORIENTATION_MAIN_STUDY =
+         "/startOrientationMainStudy";
+   public static final String STOP_MEASUREMENT_ORIENTATION_MAIN_STUDY =
+         "/stopOrientationMainStudy";
    public static final String START_MEASUREMENT_ACCELEROMETER_GYROSCOPE =
          "/startAccelerometerGyroscope";
    public static final String STOP_MEASUREMENT_ACCELEROMETER_GYROSCOPE =

@@ -72,7 +72,16 @@ public class MessageReceiverService extends WearableListenerService {
       }
 
       if (messageEvent.getPath()
-            .equals(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A)) {
+            .equals(ClientPaths.START_MEASUREMENT_ORIENTATION_MAIN_STUDY)) {
+         System.out.println("START MAIN STUDY");
+         BusProvider.postOnMainThread(new StartMeasurementEvent());
+         Intent serviceIntent = new Intent(this, SensorServiceOrientation.class);
+         serviceIntent.putExtra("absolute", true);
+         startService(serviceIntent);
+      }
+
+      if (messageEvent.getPath()
+            .equals(ClientPaths.STOP_MEASUREMENT_ORIENTATION_MAIN_STUDY)) {
          BusProvider.postOnMainThread(new StopMeasurementEvent());
          stopService(new Intent(this, SensorServiceOrientation.class));
       }

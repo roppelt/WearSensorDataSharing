@@ -3,6 +3,7 @@
    <string name="title_new_pilot_study_1a">New Pilot Study 1A (Rotation)</string>
    <string name="title_new_pilot_study_1b">New Pilot Study 1B (Force Taps)</string>
    <string name="title_new_pilot_study_2">New Pilot Study 2</string>
+   <string name="title_new_main_study">New Main Study</string>
 
 
    <string name="data_status_receiving">Receiving sensor data</string>
@@ -17,6 +18,7 @@
    <string name="button_new_pilot_study_1a">New Pilot Study 1A (Rotation)</string>
    <string name="button_new_pilot_study_1b">New Pilot Study 1B (Force Taps)</string>
    <string name="button_new_pilot_study_2">New Pilot Study 2</string>
+   <string name="button_new_main_study">New Main Study</string>
 
    <string name="sensor_data_list_title_1">Sensor</string>
    <string name="sensor_data_list_title_2">Accuracy</string>

@@ -46,6 +46,12 @@
          android:theme="@style/AppTheme.NoActionBar"
          android:parentActivityName=".MobileActivity">
       </activity>
+      <activity
+         android:name=".NewMainStudyActivity"
+         android:label="@string/title_new_main_study"
+         android:theme="@style/AppTheme.NoActionBar"
+         android:parentActivityName=".MobileActivity">
+      </activity>
       <service android:name=".SensorReceiverService">
          <intent-filter>
             <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />

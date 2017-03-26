@@ -215,6 +215,24 @@ public class RemoteSensorManager {
       });
    }
 
+   public void startMeasurementOrientationMainStudy() {
+      executorService.submit(new Runnable() {
+         @Override
+         public void run() {
+            controlMeasurementInBackground(ClientPaths.START_MEASUREMENT_ORIENTATION_MAIN_STUDY);
+         }
+      });
+   }
+
+   public void stopMeasurementOrientationMainStudy() {
+      executorService.submit(new Runnable() {
+         @Override
+         public void run() {
+            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT_ORIENTATION_MAIN_STUDY);
+         }
+      });
+   }
+
    public void startMeasurementAccelerometerGyroscope() {
       executorService.submit(new Runnable() {
          @Override
