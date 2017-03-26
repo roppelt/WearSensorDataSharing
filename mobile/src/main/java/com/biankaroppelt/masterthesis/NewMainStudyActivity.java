@@ -3,14 +3,12 @@ package com.biankaroppelt.masterthesis;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ProgressBar;
 
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
@@ -18,8 +16,6 @@ import com.biankaroppelt.masterthesis.events.BusProvider;
 import com.biankaroppelt.masterthesis.events.DataPointAddedEvent;
 import com.biankaroppelt.masterthesis.events.NewSensorEvent;
 import com.biankaroppelt.masterthesis.events.NoNodesAvailableEvent;
-import com.biankaroppelt.masterthesis.events.OnMainStudyDataSentToServerEvent;
-import com.biankaroppelt.masterthesis.events.OnPS2DataSentToServerEvent;
 import com.biankaroppelt.masterthesis.events.SensorUpdatedEvent;
 import com.squareup.otto.Subscribe;
 
@@ -36,16 +32,10 @@ public class NewMainStudyActivity extends AppCompatActivity {
 
    private static final String TAG = NewMainStudyActivity.class.getSimpleName();
 
-   //   private Button buttonDataSend;
    private Button buttonDataStart;
    private Button buttonDataStop;
-   private TextInputEditText inputParticipant;
-   private TextInputEditText inputHandSize;
-   private CheckBox checkBoxHandedness;
    private CoordinatorLayout coordinatorLayout;
    private ProgressBar loadingIndicator;
-
-   //   private ArrayList<SensorDataPoint> mItems;
 
    private WebSocketClient mWebSocketClient;
 
@@ -55,12 +45,8 @@ public class NewMainStudyActivity extends AppCompatActivity {
       setContentView(R.layout.activity_main_study);
       getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-      //      buttonDataSend = ((Button) findViewById(R.id.button_data_send));
       buttonDataStart = ((Button) findViewById(R.id.button_data_start));
       buttonDataStop = ((Button) findViewById(R.id.button_data_stop));
-      inputParticipant = ((TextInputEditText) findViewById(R.id.input_participant));
-      inputHandSize = ((TextInputEditText) findViewById(R.id.input_hand_size));
-      checkBoxHandedness = ((CheckBox) findViewById(R.id.input_handedness));
       coordinatorLayout = ((CoordinatorLayout) findViewById(R.id.coordinator_layout));
       loadingIndicator = ((ProgressBar) findViewById(R.id.loading_indicator));
 
@@ -91,12 +77,6 @@ public class NewMainStudyActivity extends AppCompatActivity {
    }
 
    private void setupListener() {
-      //      buttonDataSend.setOnClickListener(new View.OnClickListener() {
-      //         @Override
-      //         public void onClick(View view) {
-      //            sendCollectedData();
-      //         }
-      //      });
       buttonDataStart.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
@@ -112,30 +92,18 @@ public class NewMainStudyActivity extends AppCompatActivity {
    }
 
    private void startCollectingData() {
-      //      mItems = new ArrayList<>();
       buttonDataStop.setVisibility(View.VISIBLE);
       buttonDataStart.setVisibility(View.GONE);
-      //      buttonDataSend.setVisibility(View.GONE);
       loadingIndicator.setVisibility(View.GONE);
       remoteSensorManager.startMeasurementOrientationMainStudy();
    }
 
    private void stopCollectingData() {
-      //      buttonDataSend.setVisibility(View.VISIBLE);
       buttonDataStop.setVisibility(View.GONE);
       buttonDataStart.setVisibility(View.VISIBLE);
       loadingIndicator.setVisibility(View.GONE);
       remoteSensorManager.stopMeasurementOrientationMainStudy();
    }
-
-//   private void sendCollectedData() {
-//      loadingIndicator.setVisibility(View.VISIBLE);
-//      buttonDataSend.setVisibility(View.GONE);
-//      buttonDataStart.setVisibility(View.GONE);
-//      buttonDataStop.setVisibility(View.GONE);
-//
-//      sendAllData();
-//   }
 
    @Override
    protected void onResume() {
@@ -163,8 +131,6 @@ public class NewMainStudyActivity extends AppCompatActivity {
    @Subscribe
    public void onSensorUpdatedEvent(final SensorUpdatedEvent event) {
       System.out.println("onSensorUpdatedEvent");
-      //      ArrayList<SensorDataPoint> mItemsTemp;
-      //      mItems.addAll(event.getDataPointList());
       if (mWebSocketClient != null && mWebSocketClient.getReadyState()
             .equals(WebSocket.READYSTATE.OPEN)) {
          mWebSocketClient.send(buildSendString(event.getDataPointList()));
@@ -194,28 +160,7 @@ public class NewMainStudyActivity extends AppCompatActivity {
             string += ",";
          }
       }
-      //         if (i + 1 != dataPointList.size()) {
-      //            string += ";";
-      //         }
-      //      }
       return string;
-   }
-
-   @Subscribe
-   public void onMainStudyDataSentToServerEvent(final OnMainStudyDataSentToServerEvent event) {
-      boolean success = event.isSuccess();
-      System.out.println(success);
-      String snackbarString = "The dataset is stored in the database";
-      if (!success) {
-//         sendData(event.getRotationDimension(), event.getTarget(), event.getTaskSuccess());
-         snackbarString = "unsuccessful (most of the time localtunnel didn't work) - Trying again";
-      }
-      Snackbar snackbar = Snackbar.make(coordinatorLayout, snackbarString, Snackbar.LENGTH_LONG);
-      snackbar.show();
-
-      buttonDataStart.setVisibility(View.VISIBLE);
-      loadingIndicator.setVisibility(View.GONE);
-      buttonDataStop.setVisibility(View.GONE);
    }
 
    @Subscribe
@@ -228,40 +173,6 @@ public class NewMainStudyActivity extends AppCompatActivity {
       snackbar.show();
       stopCollectingData();
    }
-
-   //   private void sendAllData() {
-   //      for (int rotationDimension = 0; rotationDimension < mItems.length;
-   //           rotationDimension++) {
-   //      for (int selectedTargetId = 0; selectedTargetId < mItems[rotationDimension].length;
-   // selectedTargetId++) {
-   //            System.out.println("send " + selectedTargetId + " - " + rotationDimension + ": " +
-   //                  mItems[rotationDimension][selectedTargetId]);
-   //            sendData(rotationDimension, selectedTargetId, true);
-   //         }
-   //      }
-   //   }
-   //
-   //   private void sendData(int rotationDimension, int selectedTargetId, boolean taskSuccess) {
-   //      int participantId = Integer.parseInt(inputParticipant.getText()
-   //            .toString());
-   //      String handSizeString = inputHandSize.getText()
-   //            .toString();
-   //      boolean rightHanded = checkBoxHandedness.isChecked();
-   //      String stringUrl = "http://192.168.43.27:8080/master/new_data_collection_pilot_study_2
-   // .php";
-   //      if (mItems[rotationDimension][selectedTargetId] != null) {
-   //         new SendPilotStudy2DataToWebserverTask().execute(stringUrl, participantId,
-   // selectedTargetId,
-   //               rotationDimension, handSizeString, rightHanded, taskSuccess,
-   //               mTargetInfo[rotationDimension][selectedTargetId].getTargetAngle(),
-   //               mTargetInfo[rotationDimension][selectedTargetId].getMaxAngle(),
-   //               mTargetInfo[rotationDimension][selectedTargetId].getVarianceInPercent(),
-   //               mItems[rotationDimension][selectedTargetId],
-   // mLogs[rotationDimension][selectedTargetId]);
-   //      } else {
-   //         System.out.println("NULL: " + selectedTargetId + " - " + rotationDimension);
-   //      }
-   //   }
 
    private void connectWebSocket() {
 

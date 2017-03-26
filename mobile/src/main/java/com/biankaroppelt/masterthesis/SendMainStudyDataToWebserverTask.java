@@ -6,8 +6,6 @@ import android.os.AsyncTask;
 import com.biankaroppelt.masterthesis.data.Log;
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.events.BusProvider;
-import com.biankaroppelt.masterthesis.events.OnMainStudyDataSentToServerEvent;
-import com.biankaroppelt.masterthesis.events.OnPS2DataSentToServerEvent;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -36,13 +34,6 @@ public class SendMainStudyDataToWebserverTask extends AsyncTask<Object, Void, Bo
             ((int) urls[3]), ((String) urls[4]), ((boolean) urls[5]), ((boolean) urls[6]), ((float) urls[7]),
             ((float) urls[8]), ((float) urls[9]), ((ArrayList<SensorDataPoint>) urls[10]),
             ((ArrayList<Log>) urls[11]));
-   }
-
-   // onPostExecute displays the results of the AsyncTask.
-   @Override
-   protected void onPostExecute(Boolean success) {
-      BusProvider.postOnMainThread(
-            new OnMainStudyDataSentToServerEvent(success));
    }
 
    private Boolean sendDataCollection(String myurl, int participantId, int targetId,
