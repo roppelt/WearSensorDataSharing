@@ -105,6 +105,8 @@ public class SensorServiceOrientation extends Service implements SensorEventList
             dataToSend[i] = (float) Math.toDegrees(angleChangesCopy[i]);
          }
 
+         System.out.println(Arrays.toString(dataToSend));
+
          long timeInMillis =
                (new Date()).getTime() + (event.timestamp - System.nanoTime()) / 1000000L;
 

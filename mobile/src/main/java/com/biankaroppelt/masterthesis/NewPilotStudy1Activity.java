@@ -279,7 +279,7 @@ public class NewPilotStudy1Activity extends AppCompatActivity {
       if (networkInfo != null && networkInfo.isConnected()) {
          // fetch data
          String stringUrl =
-               "http://master.localtunnel.me/master/new_data_collection_pilot_study_1.php";
+               "http://192.168.43.27:8080/master/new_data_collection_pilot_study_1_wrong.php";
 
          //         final int dataPartitioningSize = mItems.size() / 500;
          //         for(int i = 0; i < dataPartitioningSize; i++) {

@@ -72,7 +72,7 @@ public class SendPilotStudy1DataToWebserverTask extends AsyncTask<Object, Void, 
                   String.valueOf(sensorDataPoint.getTimestamp()));
             builder.appendQueryParameter("data" + i + "[]",
                   String.valueOf(sensorDataPoint.isAbsolute()));
-            for (int j = 0; j < 6; j++) {
+            for (int j = 0; j < 9; j++) {
                if (j >= sensorDataPoint.getValues().length) {
                   builder.appendQueryParameter("data" + i + "[]", "null");
                } else {
