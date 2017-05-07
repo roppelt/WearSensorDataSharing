@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
 
-import com.biankaroppelt.masterthesis.data.Log;
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.data.TargetInfo;
 import com.biankaroppelt.masterthesis.events.BusProvider;
@@ -33,7 +32,6 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class NewPilotStudy2Activity extends AppCompatActivity {
 
@@ -41,8 +39,6 @@ public class NewPilotStudy2Activity extends AppCompatActivity {
 
    private static final String TAG = NewPilotStudy2Activity.class.getSimpleName();
 
-   //   private Button startCollectingDataButton;
-   //   private Button stopCollectingDataButton;
    private MaterialBetterSpinner spinnerTarget;
    private MaterialBetterSpinner spinnerDimension;
    private Button buttonDataSend;
@@ -54,14 +50,12 @@ public class NewPilotStudy2Activity extends AppCompatActivity {
    private CoordinatorLayout coordinatorLayout;
    private ProgressBar loadingIndicator;
 
-   //   private ArrayList<SensorDataPoint> mItems;
 
    private WebSocketClient mWebSocketClient;
    private int selectedRotationDimensionId;
    private int selectedTargetId;
 
    private ArrayList<SensorDataPoint>[][] mItems;
-   private ArrayList<Log>[][] mLogs;
    private TargetInfo[][] mTargetInfo;
    private boolean[][] mItemsSaved;
 
@@ -88,10 +82,8 @@ public class NewPilotStudy2Activity extends AppCompatActivity {
       remoteSensorManager = RemoteSensorManager.getInstance(this);
       mItems = new ArrayList[SPINNER_ROTATION_DIMENSION_LIST.length][SPINNER_TARGET_LIST.length];
       mItemsSaved = new boolean[SPINNER_ROTATION_DIMENSION_LIST.length][SPINNER_TARGET_LIST.length];
-      mLogs = new ArrayList[SPINNER_ROTATION_DIMENSION_LIST.length][SPINNER_TARGET_LIST.length];
       mTargetInfo =
             new TargetInfo[SPINNER_ROTATION_DIMENSION_LIST.length][SPINNER_TARGET_LIST.length];
-      //      mItems = new ArrayList<>();
       setupToolbar();
       setupListener();
    }
@@ -161,16 +153,13 @@ public class NewPilotStudy2Activity extends AppCompatActivity {
    }
 
    private void startCollectingData() {
-      //      mItems = new ArrayList<>();
       buttonDataStop.setVisibility(View.VISIBLE);
       buttonDataStart.setVisibility(View.GONE);
-      //      buttonDataSend.setVisibility(View.GONE);
       loadingIndicator.setVisibility(View.GONE);
       remoteSensorManager.startMeasurementOrientationPilotStudy2();
    }
 
    private void stopCollectingData() {
-      //      buttonDataSend.setVisibility(View.VISIBLE);
       buttonDataStop.setVisibility(View.GONE);
       buttonDataStart.setVisibility(View.VISIBLE);
       loadingIndicator.setVisibility(View.GONE);
@@ -179,7 +168,6 @@ public class NewPilotStudy2Activity extends AppCompatActivity {
 
    private void sendCollectedData() {
       loadingIndicator.setVisibility(View.VISIBLE);
-      //      buttonDataSend.setVisibility(View.GONE);
       buttonDataStart.setVisibility(View.GONE);
       buttonDataStop.setVisibility(View.GONE);
 
@@ -337,7 +325,7 @@ public class NewPilotStudy2Activity extends AppCompatActivity {
                mTargetInfo[rotationDimension][selectedTargetId].getTargetAngle(),
                mTargetInfo[rotationDimension][selectedTargetId].getMaxAngle(),
                mTargetInfo[rotationDimension][selectedTargetId].getVarianceInPercent(),
-               mItems[rotationDimension][selectedTargetId], mLogs[rotationDimension][selectedTargetId]);
+               mItems[rotationDimension][selectedTargetId]);
       } else {
          System.out.println("NULL: " + selectedTargetId + " - " + rotationDimension);
       }
@@ -402,7 +390,6 @@ public class NewPilotStudy2Activity extends AppCompatActivity {
                      if (success == 0) {
                         sendData(selectedRotationDimensionId, selectedTargetId, false);
                         mItems[selectedRotationDimensionId][selectedTargetId] = new ArrayList<>();
-                        mLogs[selectedRotationDimensionId][selectedTargetId] = new ArrayList<>();
                      }
                   } else if (message.startsWith("study_2_target_id")) {
                      String[] values = message.split(",");
@@ -428,9 +415,6 @@ public class NewPilotStudy2Activity extends AppCompatActivity {
                      int backTargetIdFromProcessing = Integer.parseInt(values[2]);
                      mItems[backRotationDimensionIdFromProcessing][backTargetIdFromProcessing] =
                            new ArrayList<>();
-                     mLogs[backRotationDimensionIdFromProcessing][backTargetIdFromProcessing] =
-                           new ArrayList<>();
-
                      System.out.println("BACK: selectedTargetId: " + selectedTargetId +
                            " - selectedRotationDimensionId: " + selectedRotationDimensionId);
 
@@ -445,17 +429,8 @@ public class NewPilotStudy2Activity extends AppCompatActivity {
                            new TargetInfo(targetAngle, maxAngle, varianceInPercent);
                      System.out.println("TargetInfo: " + targetAngle + " - " + maxAngle + " - " +
                            varianceInPercent);
-                  } else if (message.startsWith("study_2_log")) {
-                     String[] values = message.split(",");
-                     long timestamp = Long.parseLong(values[1]);
-                     int logType = Integer.parseInt(values[2]);
-                     if (mLogs[selectedRotationDimensionId][selectedTargetId] == null) {
-                        mLogs[selectedRotationDimensionId][selectedTargetId] = new ArrayList<>();
-                     }
-                     mLogs[selectedRotationDimensionId][selectedTargetId].add(
-                           new Log(timestamp, logType));
-                     System.out.println("LOG: " + timestamp + " - " + logType);
-                  } else if (message.startsWith("study_2_participant_id")) {
+                  }
+                  else if (message.startsWith("study_2_participant_id")) {
                      String[] values = message.split(",");
                      inputParticipant.setText(values[1]);
                   }

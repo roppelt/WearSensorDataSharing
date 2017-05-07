@@ -3,7 +3,6 @@ package com.biankaroppelt.masterthesis;
 import android.net.Uri;
 import android.os.AsyncTask;
 
-import com.biankaroppelt.masterthesis.data.Log;
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.events.BusProvider;
 import com.biankaroppelt.masterthesis.events.OnPS2DataSentToServerEvent;
@@ -36,8 +35,7 @@ public class SendPilotStudy2DataToWebserverTask extends AsyncTask<Object, Void, 
       taskSuccess = ((boolean) urls[6]);
       return sendDataCollection(((String) urls[0]), ((int) urls[1]), ((int) urls[2]),
             ((int) urls[3]), ((String) urls[4]), ((boolean) urls[5]), ((boolean) urls[6]), ((float) urls[7]),
-            ((float) urls[8]), ((float) urls[9]), ((ArrayList<SensorDataPoint>) urls[10]),
-            ((ArrayList<Log>) urls[11]));
+            ((float) urls[8]), ((float) urls[9]), ((ArrayList<SensorDataPoint>) urls[10]));
    }
 
    // onPostExecute displays the results of the AsyncTask.
@@ -50,7 +48,7 @@ public class SendPilotStudy2DataToWebserverTask extends AsyncTask<Object, Void, 
    private Boolean sendDataCollection(String myurl, int participantId, int targetId,
          int rotationDimensionId, String handSize, boolean rightHanded, boolean taskSuccess,
          float targetAngle, float maxAngle, float varianceInPercent,
-         ArrayList<SensorDataPoint> data, ArrayList<Log> logs) {
+         ArrayList<SensorDataPoint> data) {
       try {
          url = new URL(myurl);
       } catch (MalformedURLException e) {
@@ -101,12 +99,6 @@ public class SendPilotStudy2DataToWebserverTask extends AsyncTask<Object, Void, 
                         .getId()));
             builder.appendQueryParameter("data" + i + "[]", sensorDataPoint.getSensor()
                   .getName());
-         }
-         builder.appendQueryParameter("logLength", String.valueOf(logs.size()));
-         for (int i = 0; i < logs.size(); i++) {
-            Log log = logs.get(i);
-            builder.appendQueryParameter("logs" + i + "[]", String.valueOf(log.getTimestamp()));
-            builder.appendQueryParameter("logs" + i + "[]", String.valueOf(log.getLogType()));
          }
          String query = builder.build()
                .getEncodedQuery();

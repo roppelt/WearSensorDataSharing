@@ -192,7 +192,7 @@ public class RemoteSensorManager {
       executorService.submit(new Runnable() {
          @Override
          public void run() {
-            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A);
+            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT_ORIENTATION);
          }
       });
    }
