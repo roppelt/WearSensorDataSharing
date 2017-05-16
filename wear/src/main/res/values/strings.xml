@@ -1,5 +1,4 @@
 <resources>
    <string name="app_name">MasterThesis</string>
-   <string name="hello_round">Tastatur Interaktion mit Gesten</string>
-   <string name="hello_square">Hello Square World!</string>
+   <string name="title">Keyboard interaction with gestures</string>
 </resources>

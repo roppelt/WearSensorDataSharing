@@ -2,6 +2,7 @@ package com.biankaroppelt.masterthesis;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.events.BusProvider;
@@ -22,23 +23,22 @@ import java.util.ArrayList;
 public class SendPilotStudy2DataToWebserverTask extends AsyncTask<Object, Void, Boolean> {
 
    private static final String TAG = SendPilotStudy2DataToWebserverTask.class.getSimpleName();
-   private HttpURLConnection urlConnection;
-   private URL url;
    private int rotationDimension;
    private int target;
    private boolean taskSuccess;
+   private URL url;
+   private HttpURLConnection urlConnection;
 
    @Override
    protected Boolean doInBackground(Object... urls) {
       target = ((int) urls[2]);
       rotationDimension = ((int) urls[3]);
-      taskSuccess = ((boolean) urls[6]);
+      taskSuccess = ((boolean) urls[4]);
       return sendDataCollection(((String) urls[0]), ((int) urls[1]), ((int) urls[2]),
-            ((int) urls[3]), ((String) urls[4]), ((boolean) urls[5]), ((boolean) urls[6]), ((float) urls[7]),
-            ((float) urls[8]), ((float) urls[9]), ((ArrayList<SensorDataPoint>) urls[10]));
+            ((int) urls[3]), ((boolean) urls[4]), ((float) urls[5]), ((float) urls[6]),
+            ((float) urls[7]), ((ArrayList<SensorDataPoint>) urls[8]));
    }
 
-   // onPostExecute displays the results of the AsyncTask.
    @Override
    protected void onPostExecute(Boolean success) {
       BusProvider.postOnMainThread(
@@ -46,33 +46,26 @@ public class SendPilotStudy2DataToWebserverTask extends AsyncTask<Object, Void, 
    }
 
    private Boolean sendDataCollection(String myurl, int participantId, int targetId,
-         int rotationDimensionId, String handSize, boolean rightHanded, boolean taskSuccess,
-         float targetAngle, float maxAngle, float varianceInPercent,
-         ArrayList<SensorDataPoint> data) {
+         int rotationDimensionId, boolean taskSuccess, float targetAngle, float maxAngle,
+         float varianceInPercent, ArrayList<SensorDataPoint> data) {
       try {
          url = new URL(myurl);
       } catch (MalformedURLException e) {
          e.printStackTrace();
       }
       try {
-
          urlConnection = (HttpURLConnection) url.openConnection();
          urlConnection.setReadTimeout(15000);
          urlConnection.setConnectTimeout(50000);
          urlConnection.setRequestMethod("POST");
-
-         // setDoInput and setDoOutput method depict handling of both send and receive
          urlConnection.setDoInput(true);
          urlConnection.setDoOutput(true);
 
          // Append parameters to URL
          Uri.Builder builder = new Uri.Builder();
-
          builder.appendQueryParameter("participantId", String.valueOf(participantId));
          builder.appendQueryParameter("targetId", String.valueOf(targetId));
          builder.appendQueryParameter("rotationDimensionId", String.valueOf(rotationDimensionId));
-         builder.appendQueryParameter("handSize", handSize);
-         builder.appendQueryParameter("rightHanded", String.valueOf(rightHanded));
          builder.appendQueryParameter("taskSuccess", String.valueOf(taskSuccess));
          builder.appendQueryParameter("targetAngle", String.valueOf(targetAngle));
          builder.appendQueryParameter("maxAngle", String.valueOf(maxAngle));
@@ -111,31 +104,6 @@ public class SendPilotStudy2DataToWebserverTask extends AsyncTask<Object, Void, 
          writer.close();
          os.close();
          urlConnection.connect();
-
-         //         urlConnection.setDoOutput(true);
-         //         urlConnection.setChunkedStreamingMode(0);
-         //
-         ////         OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-         ////         writeStream(out);
-         ////
-         ////         InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-         ////         readStream(in);
-         //
-         //
-         //         List<Pair<String, String>> params = new ArrayList<>();
-         //         params.add(new Pair<String, String>("name", "test"));
-         //
-         //         InputStream is = new BufferedInputStream(urlConnection.getInputStream());
-         //         OutputStream os = new BufferedOutputStream(urlConnection.getOutputStream());
-         //         BufferedWriter writer = new BufferedWriter(
-         //               new OutputStreamWriter(os, "UTF-8"));
-         //         writer.write(getQuery(params));
-         //         writer.flush();
-         //         writer.close();
-         //         os.close();
-         //
-         //         urlConnection.connect();
-         //         return readIt(is, 500);
       } catch (IOException e) {
          e.printStackTrace();
          return false;
@@ -146,7 +114,6 @@ public class SendPilotStudy2DataToWebserverTask extends AsyncTask<Object, Void, 
 
          // Check if successful connection made
          if (response_code == HttpURLConnection.HTTP_OK) {
-
             // Read data sent from server
             InputStream input = urlConnection.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -157,11 +124,10 @@ public class SendPilotStudy2DataToWebserverTask extends AsyncTask<Object, Void, 
                result.append(line);
             }
             input.close();
-            // Pass data to onPostExecute method
-            System.out.println(result);
+            Log.d(TAG, result.toString());
             return true;
          } else {
-            System.out.println(
+            Log.d(TAG,
                   urlConnection.getResponseCode() + " - " + urlConnection.getResponseMessage());
             return false;
          }

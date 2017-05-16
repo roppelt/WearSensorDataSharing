@@ -1,13 +1,12 @@
 package com.biankaroppelt.masterthesis;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.support.v4.content.ContextCompat;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.WatchViewStub;
-import android.util.Log;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -15,17 +14,40 @@ import com.biankaroppelt.masterthesis.events.StartMeasurementEvent;
 import com.biankaroppelt.masterthesis.events.StopMeasurementEvent;
 import com.squareup.otto.Subscribe;
 
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
-
-import java.net.URI;
-
 public class WearActivity extends WearableActivity {
 
-   private TextView mTextView;
-
    private static final String TAG = WearActivity.class.getSimpleName();
-   private PowerManager.WakeLock mWakeLock;
+   private TextView textView;
+   private PowerManager.WakeLock wakeLock;
+
+   @Override
+   public void onEnterAmbient(Bundle ambientDetails) {
+      super.onEnterAmbient(ambientDetails);
+      textView.setTextColor(Color.WHITE);
+      textView.getPaint()
+            .setAntiAlias(false);
+   }
+
+   @Override
+   public void onExitAmbient() {
+      super.onExitAmbient();
+      textView.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
+      textView.getPaint()
+            .setAntiAlias(true);
+   }
+
+   @Subscribe
+   public void onStartMeasurementEvent(final StartMeasurementEvent event) {
+      wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(
+            PowerManager.SCREEN_BRIGHT_WAKE_LOCK, getClass().getName());
+      wakeLock.acquire();
+      wakeLock.release();
+   }
+
+   @Subscribe
+   public void onStopMeasurementEvent(final StopMeasurementEvent event) {
+      wakeLock.release();
+   }
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -41,47 +63,8 @@ public class WearActivity extends WearableActivity {
       stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
          @Override
          public void onLayoutInflated(WatchViewStub stub) {
-            mTextView = (TextView) stub.findViewById(R.id.text);
+            textView = (TextView) stub.findViewById(R.id.text);
          }
       });
-
    }
-
-   @Override
-   public void onEnterAmbient(Bundle ambientDetails) {
-      super.onEnterAmbient(ambientDetails);
-      mTextView.setTextColor(Color.WHITE);
-      mTextView.getPaint()
-            .setAntiAlias(false);
-   }
-
-   @Override
-   public void onExitAmbient() {
-      super.onExitAmbient();
-      mTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
-      mTextView.getPaint()
-            .setAntiAlias(true);
-   }
-
-   @Override
-   public void onUpdateAmbient() {
-      super.onUpdateAmbient();
-
-      // Update the content (once a minute)
-   }
-   @Subscribe
-   public void onStartMeasurementEvent(final StartMeasurementEvent event) {
-
-//      // TODO: move to activity
-      mWakeLock = ((PowerManager)getSystemService(Context.POWER_SERVICE))
-            .newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, getClass().getName());
-      mWakeLock.acquire();
-      // screen stays on in this section
-      mWakeLock.release();
-   }
-   @Subscribe
-   public void onStopMeasurementEvent(final StopMeasurementEvent event) {
-      mWakeLock.release();
-   }
-
 }

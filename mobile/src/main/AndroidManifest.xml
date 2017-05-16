@@ -18,6 +18,7 @@
       <meta-data
          android:name="com.google.android.gms.version"
          android:value="@integer/google_play_services_version" />
+
       <activity
          android:name=".MobileActivity"
          android:label="@string/app_name"
@@ -31,32 +32,27 @@
       <activity
          android:name=".NewPilotStudy1AActivity"
          android:label="@string/title_new_pilot_study_1a"
-         android:theme="@style/AppTheme.NoActionBar"
-         android:parentActivityName=".MobileActivity">
-      </activity>
+         android:parentActivityName=".MobileActivity"
+         android:theme="@style/AppTheme.NoActionBar" />
       <activity
          android:name=".NewPilotStudy1BActivity"
          android:label="@string/title_new_pilot_study_1b"
-         android:theme="@style/AppTheme.NoActionBar"
-         android:parentActivityName=".MobileActivity">
-      </activity>
+         android:parentActivityName=".MobileActivity"
+         android:theme="@style/AppTheme.NoActionBar" />
       <activity
          android:name=".NewPilotStudy2Activity"
          android:label="@string/title_new_pilot_study_2"
-         android:theme="@style/AppTheme.NoActionBar"
-         android:parentActivityName=".MobileActivity">
-      </activity>
+         android:parentActivityName=".MobileActivity"
+         android:theme="@style/AppTheme.NoActionBar" />
       <activity
          android:name=".NewMainStudyActivity"
          android:label="@string/title_new_main_study"
-         android:theme="@style/AppTheme.NoActionBar"
-         android:parentActivityName=".MobileActivity">
-      </activity>
+         android:parentActivityName=".MobileActivity"
+         android:theme="@style/AppTheme.NoActionBar" />
+
       <service android:name=".SensorReceiverService">
          <intent-filter>
             <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
-            <!--<action android:name="com.google.android.gms.wearable.DATA_CHANGED" />-->
-            <!--<data android:scheme="wear" android:host="*" android:pathPrefix="/" />-->
          </intent-filter>
       </service>
    </application>

@@ -1,8 +1,8 @@
 package com.biankaroppelt.masterthesis.data;
 
 public class TargetInfo {
-   private float targetAngle;
    private float maxAngle;
+   private float targetAngle;
    private float varianceInPercent;
 
    public TargetInfo(float targetAngle, float maxAngle, float varianceInPercent) {

@@ -13,67 +13,25 @@ import android.util.Log;
 import java.util.Arrays;
 
 public class SensorServiceOrientation extends Service implements SensorEventListener {
-   private static final String TAG = SensorServiceOrientation.class.getName();
-
-   private final static int SENS_ACCELEROMETER = Sensor.TYPE_ACCELEROMETER;
-   private final static int SENS_GYROSCOPE = Sensor.TYPE_GYROSCOPE;
    private final static int SENS_GAME_ROTATION_VECTOR = Sensor.TYPE_GAME_ROTATION_VECTOR;
-
-   SensorManager mSensorManager;
-
+   private static final String TAG = SensorServiceOrientation.class.getSimpleName();
+   private final float[] angleChanges = new float[9];
+   private final float[] rotationMatrixGame = new float[9];
    private DeviceClient client;
-   private final float[] mAngleChanges = new float[9];
-   //   private float[] mStartValuesGameRotation;
-   private final float[] mRotationMatrixGame = new float[9];
-   //   private final float[] mRotationMatrixGameFromVector = new float[9];
-   private float[] mRotationMatrixGameStart;
+   private int count = 0;
+   private boolean getAbsoluteValues = false;
    private float lastValue1 = 0.0f;
    private float lastValue2 = 0.0f;
    private float lastValue3 = 0.0f;
-   //   private float[] mRotationMatrixGameLast;
-   //   private float[] mRotationVectorStart;
-   //   private float[] mAngleChangesRelativeToLast = new float[3];
-   //   private float[] mOrientationValues = new float[3];
-   //   private float[] mOrientationValuesStart = new float[3];
-   //   private float[] mStartValues;
-   //   private float[] mLastValues;
-   //   private boolean changeValues = false;
-
-   private int count = 0;
-   private boolean getAbsoluteValues = false;
+   private float[] rotationMatrixGameStart;
+   private SensorManager sensorManager;
 
    public SensorServiceOrientation() {
    }
 
    @Override
-   public void onCreate() {
-      super.onCreate();
+   public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
-      client = DeviceClient.getInstance(this);
-
-      startMeasurementOrientation();
-   }
-
-   @Override
-   public void onStart(Intent intent, int startId) {
-      super.onStart(intent, startId);
-      if (intent != null) {
-         Bundle extras = intent.getExtras();
-
-         if (extras == null) {
-            Log.d("Service", "null");
-         } else {
-            Log.d("Service", "not null");
-            getAbsoluteValues = extras.getBoolean("absolute");
-         }
-      }
-   }
-
-   @Override
-   public void onDestroy() {
-      super.onDestroy();
-
-      stopMeasurementOrientation();
    }
 
    @Override
@@ -81,167 +39,81 @@ public class SensorServiceOrientation extends Service implements SensorEventList
       return null;
    }
 
-   protected void startMeasurementOrientation() {
-      count = 0;
-      mSensorManager = ((SensorManager) getSystemService(SENSOR_SERVICE));
-
-      Sensor gameRotationVectorSensor = mSensorManager.getDefaultSensor(SENS_GAME_ROTATION_VECTOR);
-
-      mSensorManager.registerListener(this, gameRotationVectorSensor,
-            SensorManager.SENSOR_DELAY_GAME, SensorManager.SENSOR_DELAY_UI);
+   @Override
+   public void onCreate() {
+      super.onCreate();
+      client = DeviceClient.getInstance(this);
+      startMeasurementOrientation();
    }
 
-   private void stopMeasurementOrientation() {
-      if (mSensorManager != null) {
-         mSensorManager.unregisterListener(this);
-      }
-   }
-
-   public static float dot(float[] v1, float[] v2) {
-      float res = 0;
-      for (int i = 0; i < v1.length; i++) {
-         res += v1[i] * v2[i];
-      }
-      return res;
+   @Override
+   public void onDestroy() {
+      super.onDestroy();
+      stopMeasurementOrientation();
    }
 
    @Override
    public void onSensorChanged(android.hardware.SensorEvent event) {
-
+      Log.d(TAG, "onSensorChanged: " + count + " - " + event.sensor.getName() + " - " +
+            Arrays.toString(event.values));
       if (event.sensor.getType() == Sensor.TYPE_GAME_ROTATION_VECTOR) {
          count++;
-         System.out.println("onSensorChanged: " + count + " - " + event.sensor.getName() + " - " +
-               Arrays.toString(event.values));
 
-         //         if (mStartValues == null) {
-         //            mStartValues = event.values.clone();
-         //         }
-         //         double yawStart = Math.toDegrees(Math.asin(mStartValues[2]) * 2);
-         //         double yaw = ((Math.toDegrees(Math.asin(event.values[2]) * 2) - yawStart) +
-         // 360.0) % 360.0;
-         //         System.out.println("Yaw: " + yaw);
-         //         double pitchStart = Math.toDegrees(Math.asin(mStartValues[1]) * 2);
-         //         double pitch =
-         //               ((Math.toDegrees(Math.asin(event.values[1]) * 2) - pitchStart) + 360.0)
-         // % 360.0;
-         //         System.out.println("Pitch: " + pitch);
-         //         double rollStart = Math.toDegrees(Math.asin(mStartValues[0]) * 2);
-         //         double roll =
-         //               ((Math.toDegrees(Math.asin(event.values[0]) * 2) - rollStart) + 360.0)
-         // % 360.0;
-         //         System.out.println("Roll: " + roll);
-         //         System.out.println("Winkel: " + Math.toDegrees(Math.acos(event.values[3]) * 2));
-         //         System.out.println("Winkel1: " + Math.toDegrees(Math.asin(event.values[0]) *
-         // 2));
-         //         System.out.println("Winkel2: " + Math.toDegrees(Math.asin(event.values[1]) *
-         // 2));
-         //         System.out.println("Winkel3: " + Math.toDegrees(Math.asin(event.values[2]) *
-         // 2));
-
-         ////          Orientation
-         SensorManager.getRotationMatrixFromVector(mRotationMatrixGame, event.values.clone());
-         //         SensorManager.getOrientation(mRotationMatrixGame, mOrientationValues);
-         //         System.out.println("Orientation: " + Arrays.toString(mOrientationValues));
-         //         String orientationInAngles = "";
-         //         for (int i = 0; i < mOrientationValues.length; i++) {
-         //            orientationInAngles += "   " + Math.toDegrees(mOrientationValues[i]);
-         //         }
-         //         System.out.println("Orientation in angles:" + orientationInAngles);
-
-         if (mRotationMatrixGameStart == null) {
-            mRotationMatrixGameStart = mRotationMatrixGame.clone();
-            System.out.println(
-                  "T Start:  " + mRotationMatrixGameStart[0] + "   " + mRotationMatrixGameStart[1] +
-                        "   " + mRotationMatrixGameStart[2]);
+         SensorManager.getRotationMatrixFromVector(rotationMatrixGame, event.values.clone());
+         if (rotationMatrixGameStart == null) {
+            rotationMatrixGameStart = rotationMatrixGame.clone();
          }
 
-         SensorManager.getAngleChange(mAngleChanges, mRotationMatrixGame, mRotationMatrixGameStart);
+         SensorManager.getAngleChange(angleChanges, rotationMatrixGame, rotationMatrixGameStart);
 
          float[] dataToSend = new float[3];
-         float[] angleChangesCopy = mAngleChanges.clone();
+         float[] angleChangesCopy = angleChanges.clone();
 
-         //         System.out.println("Angle Roll: " +
-         //               Math.toDegrees(Math.atan2(mRotationMatrixGame[7],
-         // mRotationMatrixGame[8])));
-         //         System.out.println("Angle Pitch: " + Math.toDegrees(Math.atan2
-         // (-mRotationMatrixGame[6],
-         //               Math.sqrt(mRotationMatrixGame[7] * mRotationMatrixGame[7] +
-         //                     mRotationMatrixGame[8] * mRotationMatrixGame[8]))));
-         //         System.out.println("Angle Yaw: " +
-         //               Math.toDegrees(Math.atan2(mRotationMatrixGame[3],
-         // mRotationMatrixGame[0])));
-
-         //            dataToSend[1] = (float) Math.toDegrees(angleChangesCopy[1]);
-
-         // Rotate/Yaw
+         // Rotate
          lastValue1 = getAngleChange360(0, (float) Math.toDegrees(angleChangesCopy[0]));
          dataToSend[0] = lastValue1;
-         //         dataToSend[0] = (float) (
-         //               Math.toDegrees(Math.atan2(mRotationMatrixGame[3],
-         // mRotationMatrixGame[0])) -
-         //                     Math.toDegrees(Math.atan2(mRotationMatrixGameStart[3],
-         // mRotationMatrixGameStart[0])));
 
-         // Pitch
+         // Lift
          lastValue3 = getAngleChange360(2, (float) Math.toDegrees(angleChangesCopy[2]));
          dataToSend[2] = lastValue3;
-         //         dataToSend[2] = (float) (Math.toDegrees(Math.atan2(-mRotationMatrixGame[6],
-         // Math.sqrt(
-         //               mRotationMatrixGame[7] * mRotationMatrixGame[7] +
-         //                     mRotationMatrixGame[8] * mRotationMatrixGame[8]))) - Math.toDegrees(
-         //               Math.atan2(-mRotationMatrixGameStart[6], Math.sqrt(
-         //                     mRotationMatrixGameStart[7] * mRotationMatrixGameStart[7] +
-         //                           mRotationMatrixGameStart[8] * mRotationMatrixGameStart[8]))));
 
-         lastValue2 = getAngleChange360(1, (float) (Math.toDegrees(
-               Math.atan2(mRotationMatrixGameStart[7], mRotationMatrixGameStart[8])) -
-               Math.toDegrees(Math.atan2(mRotationMatrixGame[7], mRotationMatrixGame[8]))));
+         // Roll
+         lastValue2 = getAngleChange360(1, (float) (
+               Math.toDegrees(Math.atan2(rotationMatrixGameStart[7], rotationMatrixGameStart[8])) -
+                     Math.toDegrees(Math.atan2(rotationMatrixGame[7], rotationMatrixGame[8]))));
          dataToSend[1] = lastValue2;
-         //
-         //         System.out.println("Angle 1 First: " + Math.toDegrees(
-         //               Math.atan2(mRotationMatrixGameStart[7], mRotationMatrixGameStart[8])));
-         //         System.out.println("Angle 1 Second: " +
-         //               Math.toDegrees(Math.atan2(mRotationMatrixGame[7],
-         // mRotationMatrixGame[8])));
-         //         dataToSend[1] = (float) (Math.toDegrees(
-         //               Math.atan2(mRotationMatrixGameStart[7], mRotationMatrixGameStart[8])) -
-         //               (Math.toDegrees(Math.atan2(mRotationMatrixGame[7],
-         // mRotationMatrixGame[8]))));
-
-         System.out.println(
-               "Sending:   " + dataToSend[0] + "    " + dataToSend[1] + "    " + dataToSend[2]);
-         System.out.println("Sending Old:   " + Math.toDegrees(angleChangesCopy[0]) + "    " +
-               (Math.toDegrees(
-                     Math.atan2(mRotationMatrixGameStart[7], mRotationMatrixGameStart[8])) -
-                     (Math.toDegrees(Math.atan2(mRotationMatrixGame[7], mRotationMatrixGame[8])))) +
-               "    " + Math.toDegrees(angleChangesCopy[2]));
-         System.out.println(
-               "Diff output: " + (Math.toDegrees(angleChangesCopy[1]) - dataToSend[1]) + "     " +
-                     Math.toDegrees(angleChangesCopy[1]) + "  -  " + dataToSend[1]);
 
          long timeInMillis = (System.currentTimeMillis() +
                Math.round((event.timestamp - SystemClock.elapsedRealtimeNanos()) / 1000000L));
-         //               (new Date()).getTime() + (event.timestamp - System.nanoTime()) / 1000000L;
 
          client.sendSensorDataOrientation(count, event.sensor.getType(), event.accuracy,
                timeInMillis, false, dataToSend);
 
          if (getAbsoluteValues) {
-            float[] mRotationMatrixGameCopy = mRotationMatrixGame.clone();
-            System.out.println("GameRoatationMatrix" + Arrays.toString(mRotationMatrixGameCopy));
-            float[] dataToSendAbsolute = new float[3];
-
-            //            for (int i = 0; i < 3; i++) {
-            //               dataToSendAbsolute[i] = (float) Math.toDegrees
-            // (mRotationMatrixGameCopy[i]);
-            //            }
-            //            client.sendSensorDataOrientation(count, event.sensor.getType(), event
-            // .accuracy,
-            //                  timeInMillis, getAbsoluteValues, dataToSendAbsolute);
+            float[] mRotationMatrixGameCopy = rotationMatrixGame.clone();
             client.sendSensorDataOrientation(count, event.sensor.getType(), event.accuracy,
                   timeInMillis, getAbsoluteValues, mRotationMatrixGameCopy);
          }
       }
+   }
+
+   @Override
+   public void onStart(Intent intent, int startId) {
+      super.onStart(intent, startId);
+      if (intent != null) {
+         Bundle extras = intent.getExtras();
+         if (extras != null) {
+            getAbsoluteValues = extras.getBoolean("absolute");
+         }
+      }
+   }
+
+   protected void startMeasurementOrientation() {
+      count = 0;
+      sensorManager = ((SensorManager) getSystemService(SENSOR_SERVICE));
+      Sensor gameRotationVectorSensor = sensorManager.getDefaultSensor(SENS_GAME_ROTATION_VECTOR);
+      sensorManager.registerListener(this, gameRotationVectorSensor,
+            SensorManager.SENSOR_DELAY_GAME, SensorManager.SENSOR_DELAY_UI);
    }
 
    private float getAngleChange360(int value, float angleDifference) {
@@ -260,7 +132,7 @@ public class SensorServiceOrientation extends Service implements SensorEventList
             lastValue = 0.0f;
       }
       if (Math.abs(lastValue - angleDifference) >= 300) {
-         if (lastValue > 0 || (lastValue == 0 && Math.abs(angleDifference - 360.0) >= 360)) {
+         if (lastValue > 0) {
             angleDifference += 360.0;
          } else if (lastValue < 0) {
             angleDifference -= 360.0;
@@ -269,8 +141,9 @@ public class SensorServiceOrientation extends Service implements SensorEventList
       return angleDifference;
    }
 
-   @Override
-   public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+   private void stopMeasurementOrientation() {
+      if (sensorManager != null) {
+         sensorManager.unregisterListener(this);
+      }
    }
 }

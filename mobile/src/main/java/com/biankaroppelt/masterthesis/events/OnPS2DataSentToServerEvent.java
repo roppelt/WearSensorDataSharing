@@ -1,9 +1,9 @@
 package com.biankaroppelt.masterthesis.events;
 
 public class OnPS2DataSentToServerEvent {
+   private int rotationDimension;
    private boolean success;
    private int target;
-   private int rotationDimension;
    private boolean taskSuccess;
 
    public OnPS2DataSentToServerEvent(boolean success, int target, int rotationDimension,
@@ -14,12 +14,12 @@ public class OnPS2DataSentToServerEvent {
       this.taskSuccess = taskSuccess;
    }
 
-   public int getTarget() {
-      return target;
-   }
-
    public int getRotationDimension() {
       return rotationDimension;
+   }
+
+   public int getTarget() {
+      return target;
    }
 
    public boolean getTaskSuccess() {

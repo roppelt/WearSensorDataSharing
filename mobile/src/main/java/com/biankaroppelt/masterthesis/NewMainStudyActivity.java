@@ -5,16 +5,12 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.events.BusProvider;
-import com.biankaroppelt.masterthesis.events.DataPointAddedEvent;
-import com.biankaroppelt.masterthesis.events.NewSensorEvent;
 import com.biankaroppelt.masterthesis.events.NoNodesAvailableEvent;
 import com.biankaroppelt.masterthesis.events.SensorUpdatedEvent;
 import com.squareup.otto.Subscribe;
@@ -28,92 +24,38 @@ import java.util.ArrayList;
 
 public class NewMainStudyActivity extends AppCompatActivity {
 
-   private RemoteSensorManager remoteSensorManager;
-
    private static final String TAG = NewMainStudyActivity.class.getSimpleName();
-
-   private Button buttonDataStart;
-   private Button buttonDataStop;
    private CoordinatorLayout coordinatorLayout;
    private ProgressBar loadingIndicator;
+   private RemoteSensorManager remoteSensorManager;
+   private WebSocketClient webSocketClient;
 
-   private WebSocketClient mWebSocketClient;
+   @Subscribe
+   public void onNoNodesAvailableEvent(final NoNodesAvailableEvent event) {
+      Snackbar.make(coordinatorLayout, R.string.no_watch_paired, Snackbar.LENGTH_LONG)
+            .show();
+      stopCollectingData();
+   }
+
+   @Subscribe
+   public void onSensorUpdatedEvent(final SensorUpdatedEvent event) {
+      if (webSocketClient != null && webSocketClient.getReadyState()
+            .equals(WebSocket.READYSTATE.OPEN)) {
+         webSocketClient.send(buildSendString(event.getDataPointList()));
+      } else {
+         connectWebSocket();
+      }
+   }
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main_study);
       getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-      buttonDataStart = ((Button) findViewById(R.id.button_data_start));
-      buttonDataStop = ((Button) findViewById(R.id.button_data_stop));
       coordinatorLayout = ((CoordinatorLayout) findViewById(R.id.coordinator_layout));
       loadingIndicator = ((ProgressBar) findViewById(R.id.loading_indicator));
-
       remoteSensorManager = RemoteSensorManager.getInstance(this);
       setupToolbar();
-      setupListener();
-   }
-
-   private void setupToolbar() {
-      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-      setSupportActionBar(toolbar);
-   }
-
-   @Override
-   public boolean onCreateOptionsMenu(Menu menu) {
-      //      getMenuInflater().inflate(R.menu.menu_mobile, menu);
-      return false;
-   }
-
-   @Override
-   public boolean onPrepareOptionsMenu(Menu menu) {
-      return super.onPrepareOptionsMenu(menu);
-   }
-
-   @Override
-   public boolean onOptionsItemSelected(MenuItem item) {
-      return super.onOptionsItemSelected(item);
-   }
-
-   private void setupListener() {
-      buttonDataStart.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View view) {
-            startCollectingData();
-         }
-      });
-      buttonDataStop.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View view) {
-            stopCollectingData();
-         }
-      });
-   }
-
-   private void startCollectingData() {
-      buttonDataStop.setVisibility(View.VISIBLE);
-      buttonDataStart.setVisibility(View.GONE);
-      loadingIndicator.setVisibility(View.GONE);
-      remoteSensorManager.startMeasurementOrientationMainStudy();
-   }
-
-   private void stopCollectingData() {
-      buttonDataStop.setVisibility(View.GONE);
-      buttonDataStart.setVisibility(View.VISIBLE);
-      loadingIndicator.setVisibility(View.GONE);
-      remoteSensorManager.stopMeasurementOrientationMainStudy();
-   }
-
-   @Override
-   protected void onResume() {
-      super.onResume();
-      BusProvider.getInstance()
-            .register(this);
-      if (mWebSocketClient == null || !mWebSocketClient.getReadyState()
-            .equals(WebSocket.READYSTATE.OPEN)) {
-         connectWebSocket();
-      }
    }
 
    @Override
@@ -122,27 +64,22 @@ public class NewMainStudyActivity extends AppCompatActivity {
       BusProvider.getInstance()
             .unregister(this);
       stopCollectingData();
+      webSocketClient.close();
    }
 
-   @Subscribe
-   public void onNewSensorEvent(final NewSensorEvent event) {
-   }
-
-   @Subscribe
-   public void onSensorUpdatedEvent(final SensorUpdatedEvent event) {
-      System.out.println("onSensorUpdatedEvent");
-      if (mWebSocketClient != null && mWebSocketClient.getReadyState()
+   @Override
+   protected void onResume() {
+      super.onResume();
+      BusProvider.getInstance()
+            .register(this);
+      if (webSocketClient == null || !webSocketClient.getReadyState()
             .equals(WebSocket.READYSTATE.OPEN)) {
-         mWebSocketClient.send(buildSendString(event.getDataPointList()));
-      } else {
          connectWebSocket();
       }
    }
 
    private String buildSendString(ArrayList<SensorDataPoint> dataPointList) {
       String string = "";
-      //      for (int i = 0; i < dataPointList.size(); i++) {
-      // Building the string only of the last dataPoint
       SensorDataPoint sensorDataPoint = dataPointList.get(dataPointList.size() - 1);
       if (sensorDataPoint.isAbsolute()) {
          if (dataPointList.size() <= 1 || dataPointList.get(dataPointList.size() - 2)
@@ -163,30 +100,26 @@ public class NewMainStudyActivity extends AppCompatActivity {
       return string;
    }
 
-   @Subscribe
-   public void onDataPointAddedEvent(final DataPointAddedEvent event) {
-   }
-
-   @Subscribe
-   public void onNoNodesAvailableEvent(final NoNodesAvailableEvent event) {
-      Snackbar snackbar = Snackbar.make(coordinatorLayout, "No watch paired", Snackbar.LENGTH_LONG);
-      snackbar.show();
-      stopCollectingData();
-   }
-
    private void connectWebSocket() {
-
       URI uri;
-      uri = URI.create("ws://192.168.43.27:1234/");
-
-      mWebSocketClient = new WebSocketClient(uri) {
+      uri = URI.create(getString(R.string.websocket_uri));
+      webSocketClient = new WebSocketClient(uri) {
          @Override
-         public void onOpen(ServerHandshake serverHandshake) {
-            System.out.println("websocket open");
+         public void onClose(int i, String s, boolean b) {
+            Log.d(TAG, "Websocket connection closed " + s);
+         }
+
+         @Override
+         public void onError(Exception e) {
+            Log.d(TAG, "Websocket error" + e.getMessage());
+            Snackbar.make(coordinatorLayout, R.string.websocket_error, Snackbar.LENGTH_LONG)
+                  .show();
+            connectWebSocket();
          }
 
          @Override
          public void onMessage(String s) {
+            Log.d(TAG, "Websocket message received");
             final String message = s.trim();
             runOnUiThread(new Runnable() {
                @Override
@@ -201,19 +134,26 @@ public class NewMainStudyActivity extends AppCompatActivity {
          }
 
          @Override
-         public void onClose(int i, String s, boolean b) {
-            android.util.Log.i("Websocket", "Closed " + s);
-         }
-
-         @Override
-         public void onError(Exception e) {
-            android.util.Log.i("Websocket", "Error " + e.getMessage());
-            Snackbar snackbar =
-                  Snackbar.make(coordinatorLayout, "Websocket error - retry", Snackbar.LENGTH_LONG);
-            snackbar.show();
-            connectWebSocket();
+         public void onOpen(ServerHandshake serverHandshake) {
+            Log.d(TAG, "Websocket open");
          }
       };
-      mWebSocketClient.connect();
+      webSocketClient.connect();
+   }
+
+   private void setupToolbar() {
+      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      setSupportActionBar(toolbar);
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+   }
+
+   private void startCollectingData() {
+      loadingIndicator.setVisibility(View.VISIBLE);
+      remoteSensorManager.startMeasurementOrientationMainStudy();
+   }
+
+   private void stopCollectingData() {
+      loadingIndicator.setVisibility(View.GONE);
+      remoteSensorManager.stopMeasurementOrientationMainStudy();
    }
 }

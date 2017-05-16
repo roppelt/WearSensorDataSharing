@@ -3,7 +3,7 @@ package com.biankaroppelt.masterthesis.data;
 import android.util.SparseArray;
 
 public class SensorNames {
-   public SparseArray<String> names;
+   private SparseArray<String> names;
 
    public SensorNames() {
       names = new SparseArray<>();
@@ -34,11 +34,9 @@ public class SensorNames {
 
    public String getName(int sensorId) {
       String name = names.get(sensorId);
-
       if (name == null) {
          name = "Unknown";
       }
-
       return name;
    }
 }

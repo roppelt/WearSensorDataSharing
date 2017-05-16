@@ -5,43 +5,26 @@
    <string name="title_new_pilot_study_2">New Pilot Study 2</string>
    <string name="title_new_main_study">New Main Study</string>
 
-
-   <string name="data_status_receiving">Receiving sensor data</string>
-   <string name="data_status_idle">Not receiving sensor data</string>
-
-   <!--<string name="button_collecting_data_start">Start collecting data</string>-->
-   <!--<string name="button_collecting_data_stop">Stop collecting data</string>-->
-   <string name="button_collecting_data_orientation_start">Start collecting data orientation</string>
-   <string name="button_collecting_data_orientation_stop">Stop collecting data orientation</string>
-   <string name="button_collecting_data_acc_gyr_start">Start collecting data Accelerometer and Gyroscope</string>
-   <string name="button_collecting_data_acc_gyr_stop">Stop collecting data Accelerometer and Gyroscope</string>
    <string name="button_new_pilot_study_1a">New Pilot Study 1A (Rotation)</string>
    <string name="button_new_pilot_study_1b">New Pilot Study 1B (Force Taps)</string>
    <string name="button_new_pilot_study_2">New Pilot Study 2</string>
    <string name="button_new_main_study">New Main Study</string>
 
-   <string name="sensor_data_list_title_1">Sensor</string>
-   <string name="sensor_data_list_title_2">Accuracy</string>
-   <string name="sensor_data_list_title_3">Values</string>
-
-   <string name="action_delete_data">Delete data</string>
-   <string name="action_send_data">Send data</string>
-   <string name="popup_hint_data_title">Name of the data collection</string>
-   <string name="popup_data_title">Send the data to the websever</string>
-   <string name="popup_button_ok">Send</string>
-   <string name="popup_button_cancel">Cancel</string>
-   <string name="no_data_collecting">No data collecting</string>
-   <string name="data_collecting">Data collecting…</string>
-
    <string name="pilot_study_hint_participant">Participant ID</string>
-   <string name="pilot_study_hint_hand_size">Hand size</string>
-   <string name="pilot_study_hint_handedness">Right handed</string>
    <string name="pilot_study_hint_finger">Finger ID</string>
    <string name="pilot_study_hint_rotation_dimension">Rotation Dimension ID</string>
    <string name="pilot_study_hint_target">Target ID</string>
    <string name="pilot_study_button_send">Send data</string>
-   <string name="pilot_study_button_stop">Stop collecting data</string>
-   <string name="pilot_study_button_start">Start collecting data</string>
-
    <string name="pilot_study_hint_tap_type">Tap Task</string>
+
+   <string name="no_watch_paired">No watch paired</string>
+   <string name="successful_database_storage">The dataset is stored in the database</string>
+   <string name="unsuccessful_database_storage">unsuccessful - Trying again</string>
+   <string name="websocket_error">TWebsocket error - retry</string>
+
+   <string name="websocket_uri">ws://192.168.43.27:1234/</string>
+   <string name="url_save_data">http://192.168.43.27:8080/master/%1$s.php</string>
+   <string name="save_data_file_pilot_1_a">new_data_collection_pilot_study_1A</string>
+   <string name="save_data_file_pilot_1_b">new_data_collection_pilot_study_1B</string>
+   <string name="save_data_file_pilot_2">new_data_collection_pilot_study_2</string>
 </resources>
