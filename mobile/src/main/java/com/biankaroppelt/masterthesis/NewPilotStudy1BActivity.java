@@ -169,9 +169,9 @@ public class NewPilotStudy1BActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                @Override
                public void run() {
-                  if (message.equals("start_accelerometer_gyroscope")) {
+                  if (message.equals("start_accelerometer")) {
                      startCollectingData();
-                  } else if (message.equals("stop_accelerometer_gyroscope")) {
+                  } else if (message.equals("stop_accelerometer")) {
                      stopCollectingData();
                   } else if (message.startsWith("study_1b_tap_type")) {
                      String[] values = message.split(",");

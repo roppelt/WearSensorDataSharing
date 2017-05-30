@@ -20,7 +20,7 @@
    <string name="no_watch_paired">No watch paired</string>
    <string name="successful_database_storage">The dataset is stored in the database</string>
    <string name="unsuccessful_database_storage">unsuccessful - Trying again</string>
-   <string name="websocket_error">TWebsocket error - retry</string>
+   <string name="websocket_error">Websocket error - retry</string>
 
    <string name="websocket_uri">ws://192.168.43.27:1234/</string>
    <string name="url_save_data">http://192.168.43.27:8080/master/%1$s.php</string>

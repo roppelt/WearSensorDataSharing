@@ -3,7 +3,7 @@ package com.biankaroppelt.masterthesis;
 import android.content.Intent;
 import android.util.Log;
 
-import com.biankaroppelt.datalogger.ClientPaths;
+import com.biankaroppelt.datalogger.SharedStrings;
 import com.biankaroppelt.masterthesis.events.BusProvider;
 import com.biankaroppelt.masterthesis.events.StartMeasurementEvent;
 import com.biankaroppelt.masterthesis.events.StopMeasurementEvent;
@@ -29,55 +29,55 @@ public class MessageReceiverService extends WearableListenerService {
       Log.d(TAG, "Received message: " + messageEvent.getPath());
 
       if (messageEvent.getPath()
-            .equals(ClientPaths.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A)) {
+            .equals(SharedStrings.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A)) {
          BusProvider.postOnMainThread(new StartMeasurementEvent());
          Intent serviceIntent = new Intent(this, SensorServiceOrientation.class);
-         serviceIntent.putExtra("absolute", true);
+         serviceIntent.putExtra(getString(R.string.extra_absolute_values), true);
          startService(serviceIntent);
       }
 
       if (messageEvent.getPath()
-            .equals(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A)) {
+            .equals(SharedStrings.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A)) {
          BusProvider.postOnMainThread(new StopMeasurementEvent());
          stopService(new Intent(this, SensorServiceOrientation.class));
       }
 
       if (messageEvent.getPath()
-            .equals(ClientPaths.START_MEASUREMENT_ACCELEROMETER_PILOT_STUDY_1B)) {
+            .equals(SharedStrings.START_MEASUREMENT_ACCELEROMETER_PILOT_STUDY_1B)) {
          BusProvider.postOnMainThread(new StartMeasurementEvent());
          startService(new Intent(this, SensorServiceAccelerometer.class));
       }
 
       if (messageEvent.getPath()
-            .equals(ClientPaths.STOP_MEASUREMENT_ACCELEROMETER_PILOT_STUDY_1B)) {
+            .equals(SharedStrings.STOP_MEASUREMENT_ACCELEROMETER_PILOT_STUDY_1B)) {
          BusProvider.postOnMainThread(new StopMeasurementEvent());
          stopService(new Intent(this, SensorServiceAccelerometer.class));
       }
 
       if (messageEvent.getPath()
-            .equals(ClientPaths.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_2)) {
+            .equals(SharedStrings.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_2)) {
          BusProvider.postOnMainThread(new StartMeasurementEvent());
          Intent serviceIntent = new Intent(this, SensorServiceOrientation.class);
-         serviceIntent.putExtra("absolute", true);
+         serviceIntent.putExtra(getString(R.string.extra_absolute_values), true);
          startService(serviceIntent);
       }
 
       if (messageEvent.getPath()
-            .equals(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_2)) {
+            .equals(SharedStrings.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_2)) {
          BusProvider.postOnMainThread(new StopMeasurementEvent());
          stopService(new Intent(this, SensorServiceOrientation.class));
       }
 
       if (messageEvent.getPath()
-            .equals(ClientPaths.START_MEASUREMENT_ORIENTATION_MAIN_STUDY)) {
+            .equals(SharedStrings.START_MEASUREMENT_ORIENTATION_MAIN_STUDY)) {
          BusProvider.postOnMainThread(new StartMeasurementEvent());
          Intent serviceIntent = new Intent(this, SensorServiceOrientation.class);
-         serviceIntent.putExtra("absolute", true);
+         serviceIntent.putExtra(getString(R.string.extra_absolute_values), true);
          startService(serviceIntent);
       }
 
       if (messageEvent.getPath()
-            .equals(ClientPaths.STOP_MEASUREMENT_ORIENTATION_MAIN_STUDY)) {
+            .equals(SharedStrings.STOP_MEASUREMENT_ORIENTATION_MAIN_STUDY)) {
          BusProvider.postOnMainThread(new StopMeasurementEvent());
          stopService(new Intent(this, SensorServiceOrientation.class));
       }

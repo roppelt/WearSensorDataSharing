@@ -6,6 +6,9 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.WearableListenerService;
 
+import static com.biankaroppelt.datalogger.SharedStrings.SEND_DATA_ACCELEROMETER;
+import static com.biankaroppelt.datalogger.SharedStrings.SEND_DATA_ORIENTATION;
+
 public class SensorReceiverService extends WearableListenerService {
    private static final String TAG = SensorReceiverService.class.getSimpleName();
 
@@ -20,11 +23,11 @@ public class SensorReceiverService extends WearableListenerService {
    @Override
    public void onMessageReceived(MessageEvent messageEvent) {
       if (messageEvent.getPath()
-            .startsWith("/sensorsAccelerometer/")) {
+            .startsWith(SEND_DATA_ACCELEROMETER)) {
          String data = new String(messageEvent.getData());
          sensorManager.addSensorData(data);
       } else if (messageEvent.getPath()
-            .startsWith("/sensorsOrientation/")) {
+            .startsWith(SEND_DATA_ORIENTATION)) {
          String data = new String(messageEvent.getData());
          sensorManager.addSensorData(data);
       }

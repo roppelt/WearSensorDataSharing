@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.biankaroppelt.datalogger.ClientPaths;
+import com.biankaroppelt.datalogger.SharedStrings;
 import com.biankaroppelt.masterthesis.data.Sensor;
 import com.biankaroppelt.masterthesis.data.SensorDataPoint;
 import com.biankaroppelt.masterthesis.data.SensorNames;
@@ -81,7 +81,7 @@ class RemoteSensorManager {
          @Override
          public void run() {
             controlMeasurementInBackground(
-                  ClientPaths.START_MEASUREMENT_ACCELEROMETER_PILOT_STUDY_1B);
+                  SharedStrings.START_MEASUREMENT_ACCELEROMETER_PILOT_STUDY_1B);
          }
       });
    }
@@ -90,7 +90,7 @@ class RemoteSensorManager {
       executorService.submit(new Runnable() {
          @Override
          public void run() {
-            controlMeasurementInBackground(ClientPaths.START_MEASUREMENT_ORIENTATION_MAIN_STUDY);
+            controlMeasurementInBackground(SharedStrings.START_MEASUREMENT_ORIENTATION_MAIN_STUDY);
          }
       });
    }
@@ -100,7 +100,7 @@ class RemoteSensorManager {
          @Override
          public void run() {
             controlMeasurementInBackground(
-                  ClientPaths.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A);
+                  SharedStrings.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A);
          }
       });
    }
@@ -109,7 +109,7 @@ class RemoteSensorManager {
       executorService.submit(new Runnable() {
          @Override
          public void run() {
-            controlMeasurementInBackground(ClientPaths.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_2);
+            controlMeasurementInBackground(SharedStrings.START_MEASUREMENT_ORIENTATION_PILOT_STUDY_2);
          }
       });
    }
@@ -119,7 +119,7 @@ class RemoteSensorManager {
          @Override
          public void run() {
             controlMeasurementInBackground(
-                  ClientPaths.STOP_MEASUREMENT_ACCELEROMETER_PILOT_STUDY_1B);
+                  SharedStrings.STOP_MEASUREMENT_ACCELEROMETER_PILOT_STUDY_1B);
          }
       });
    }
@@ -128,7 +128,7 @@ class RemoteSensorManager {
       executorService.submit(new Runnable() {
          @Override
          public void run() {
-            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT_ORIENTATION_MAIN_STUDY);
+            controlMeasurementInBackground(SharedStrings.STOP_MEASUREMENT_ORIENTATION_MAIN_STUDY);
          }
       });
    }
@@ -137,7 +137,7 @@ class RemoteSensorManager {
       executorService.submit(new Runnable() {
          @Override
          public void run() {
-            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A);
+            controlMeasurementInBackground(SharedStrings.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_1A);
          }
       });
    }
@@ -146,7 +146,7 @@ class RemoteSensorManager {
       executorService.submit(new Runnable() {
          @Override
          public void run() {
-            controlMeasurementInBackground(ClientPaths.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_2);
+            controlMeasurementInBackground(SharedStrings.STOP_MEASUREMENT_ORIENTATION_PILOT_STUDY_2);
          }
       });
    }

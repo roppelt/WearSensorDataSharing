@@ -1,3 +1,4 @@
 <resources>
    <string name="app_name">MasterThesis</string>
+   <string name="extra_absolute_values">absolute</string>
 </resources>

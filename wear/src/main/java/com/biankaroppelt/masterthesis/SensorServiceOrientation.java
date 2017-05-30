@@ -103,7 +103,7 @@ public class SensorServiceOrientation extends Service implements SensorEventList
       if (intent != null) {
          Bundle extras = intent.getExtras();
          if (extras != null) {
-            getAbsoluteValues = extras.getBoolean("absolute");
+            getAbsoluteValues = extras.getBoolean(getString(R.string.extra_absolute_values));
          }
       }
    }

@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.biankaroppelt.datalogger.SharedStrings.SEND_DATA_ACCELEROMETER;
+import static com.biankaroppelt.datalogger.SharedStrings.SEND_DATA_ORIENTATION;
+
 class DeviceClient {
    private static final int CLIENT_CONNECTION_TIMEOUT = 15000;
    private static final String TAG = DeviceClient.class.getName();
@@ -40,7 +43,7 @@ class DeviceClient {
             index + ";" + sensorType + ";" + accuracy + ";" + timestamp + ";" + absolute + ";" +
                   Arrays.toString(values);
       lastSensorData.put(sensorType, t);
-      sendMessage("/sensorsAccelerometer/", data);
+      sendMessage(SEND_DATA_ACCELEROMETER, data);
    }
 
    void sendSensorDataOrientation(final int index, final int sensorType, final int accuracy,
@@ -50,13 +53,13 @@ class DeviceClient {
             index + ";" + sensorType + ";" + accuracy + ";" + timestamp + ";" + absolute + ";" +
                   Arrays.toString(values);
       lastSensorData.put(sensorType, t);
-      sendMessage("/sensorsOrientation/", data);
+      sendMessage(SEND_DATA_ORIENTATION, data);
    }
 
    private void sendMessage(final String path, final String data) {
       if (validateConnection()) {
          if (nodes == null || nodes.isEmpty()) {
-            Log.e(TAG, "NO NODE");
+            Log.e(TAG, "No node connected");
             new Thread(new Runnable() {
                @Override
                public void run() {
